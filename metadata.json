@@ -1,0 +1,5 @@
+{
+  "name": "Smart Learn",
+  "description": "An intelligent student segmentation and personalized learning platform that clusters students based on performance and generates tailored study plans using Gemini.",
+  "requestFramePermissions": []
+}
