@@ -1,8 +1,7 @@
 export enum ClusterType {
-  TOPPER = 'Topper', // > 75
-  AVERAGE = 'Average', // > 50 & <= 75
-  BELOW_AVERAGE = 'Below Average', // > 25 & <= 50
-  FAILURE = 'Needs Improvement', // <= 25
+  ADVANCE = 'Advance', // 7-9 Correct
+  INTERMEDIATE = 'Intermediate', // 4-6 Correct
+  EXPLORER = 'Explorer', // 0-3 Correct
 }
 
 export interface Recommendation {
@@ -22,26 +21,24 @@ export interface UserProfile {
   studySource: 'video' | 'books';
   cluster: ClusterType;
   studyPlan?: string; // Markdown content from Gemini
+  studyPlanStartDate?: string; // ISO Date string for tracking 7-day progress
   recommendations?: Recommendation[]; // AI Generated specifics
   joinedAt: string;
+  completedTopics?: string[]; // Array of topic IDs that user has completed
 }
 
 export interface QuizResult {
   id: string;
   courseId: string;
+  topicId?: string; // Added for granular history
   score: number;
   totalQuestions: number;
   percentage: number;
   badge: string;
   feedback?: string; // From Gemini
+  questionResults?: boolean[]; // Array of true/false for each question
+  answers?: { [key: number]: number }; // Map of questionId -> selectedOptionIndex
   date: string;
-}
-
-export interface Topic {
-  id: string;
-  title: string;
-  videoUrl: string; // Placeholder or YouTube embed
-  bookContent: string; // Text summary
 }
 
 export interface Question {
@@ -49,6 +46,20 @@ export interface Question {
   text: string;
   options: string[];
   correctAnswer: number; // Index
+}
+
+export interface TopicQuiz {
+  id: string;
+  title: string;
+  questions: Question[];
+}
+
+export interface Topic {
+  id: string;
+  title: string;
+  videoUrl: string; // Placeholder or YouTube embed
+  bookContent: string; // Text summary
+  quizzes?: TopicQuiz[];
 }
 
 export interface Course {

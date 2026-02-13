@@ -5,8 +5,11 @@ import Login from './components/Login';
 import Onboarding from './components/Onboarding';
 import Dashboard from './components/Dashboard';
 import CourseView from './components/CourseView';
+import TopicView from './components/TopicView';
 import Quiz from './components/Quiz';
 import Profile from './components/Profile';
+import History from './components/History';
+import QuizReview from './components/QuizReview';
 import { getUser } from './services/storageService';
 import { UserProfile } from './types';
 import { auth } from './services/firebase';
@@ -90,15 +93,32 @@ const App: React.FC = () => {
         } />
 
         <Route path="/course/:id" element={
-          user ? <Layout user={user} setUser={setUser}><CourseView user={user} /></Layout> : <Navigate to="/" />
+          user ? <CourseView user={user} /> : <Navigate to="/" />
+        } />
+
+        {/* Distraction-Free Topic View (No Layout) */}
+        <Route path="/course/:courseId/topic/:topicId" element={
+          user ? <TopicView /> : <Navigate to="/" />
+        } />
+
+        <Route path="/course/:courseId/topic/:topicId/quiz/:quizId" element={
+          user ? <Quiz user={user} setUser={setUser} /> : <Navigate to="/" />
         } />
 
         <Route path="/quiz/:courseId" element={
-          user ? <Layout user={user} setUser={setUser}><Quiz user={user} setUser={setUser} /></Layout> : <Navigate to="/" />
+          user ? <Quiz user={user} setUser={setUser} /> : <Navigate to="/" />
         } />
 
         <Route path="/profile" element={
           user ? <Layout user={user} setUser={setUser}><Profile user={user} setUser={setUser} /></Layout> : <Navigate to="/" />
+        } />
+
+        <Route path="/history" element={
+          user ? <Layout user={user} setUser={setUser}><History user={user} /></Layout> : <Navigate to="/" />
+        } />
+
+        <Route path="/history/review/:resultId" element={
+          user ? <QuizReview user={user} /> : <Navigate to="/" />
         } />
 
         <Route path="*" element={<Navigate to="/" />} />

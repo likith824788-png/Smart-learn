@@ -13,23 +13,8 @@ const CourseView: React.FC<CourseViewProps> = ({ user }) => {
     const { id } = useParams();
     const course = COURSES.find(c => c.id === id);
     const [activeTopic, setActiveTopic] = useState<string | null>(null);
-    const [completedTopics, setCompletedTopics] = useState<Set<string>>(new Set());
-
-    if (!course) return <div className="p-8 text-center text-slate-500">Course not found</div>;
-
-    const handleMarkComplete = (topicId: string) => {
-        setCompletedTopics(prev => {
-            const newSet = new Set(prev);
-            if (newSet.has(topicId)) {
-                newSet.delete(topicId);
-            } else {
-                newSet.add(topicId);
-            }
-            return newSet;
-        });
-    };
-
-    const progress = (completedTopics.size / course.topics.length) * 100;
+    const completedTopicsSet = new Set(user.completedTopics || []);
+    const progress = (completedTopicsSet.size / course.topics.length) * 100;
 
     // Get extended content or fallback to basic content
     const getTopicContent = (topic: { id: string; bookContent: string }) => {
@@ -37,97 +22,80 @@ const CourseView: React.FC<CourseViewProps> = ({ user }) => {
     };
 
     return (
-        <div className="max-w-5xl mx-auto pb-12">
-            <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-                <div>
-                    <Link to="/dashboard" className="text-slate-500 hover:text-slate-800 text-sm mb-2 inline-block">&larr; Back to Dashboard</Link>
-                    <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
-                        <span>{course.icon}</span> {course.title}
-                    </h1>
-                    <div className="mt-3 flex items-center gap-3">
-                        <div className="flex-1 bg-gray-200 rounded-full h-2 max-w-xs">
-                            <div
-                                className="bg-green-500 h-2 rounded-full transition-all duration-300"
-                                style={{ width: `${progress}%` }}
+        <div className="min-h-screen bg-gray-50 p-6 md:p-10">
+            <Link to="/dashboard" className="mb-6 inline-flex items-center text-slate-600 hover:text-slate-900 transition-colors">
+                <span className="mr-2">←</span> Back to Dashboard
+            </Link>
+
+            <div className="max-w-5xl mx-auto pb-12">
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                    <div>
+                        <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
+                            {course.icon.startsWith('http') ? (
+                                <img src={course.icon} alt={course.title} className="h-10 w-10 object-contain" />
+                            ) : (
+                                <span>{course.icon}</span>
+                            )}
+                            <span>{course.title}</span>
+                        </h1>
+                    </div>
+
+                    {/* Speedometer Gauge - Moved to top right */}
+                    <div className="relative w-32 h-16 mr-4">
+                        <svg viewBox="0 0 100 50" className="w-full h-full overflow-visible">
+                            {/* Background Arc */}
+                            <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#e2e8f0" strokeWidth="10" strokeLinecap="round" />
+                            {/* Foreground Arc */}
+                            <path
+                                d={`M 10 50 A 40 40 0 0 1 ${50 - 40 * Math.cos((progress / 100) * Math.PI)} ${50 - 40 * Math.sin((progress / 100) * Math.PI)}`}
+                                fill="none"
+                                stroke={progress === 100 ? "#22c55e" : "#4f46e5"}
+                                strokeWidth="10"
+                                strokeLinecap="round"
+                                className="transition-all duration-1000 ease-out"
                             />
+                        </svg>
+                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-center -mb-2">
+                            <span className={`text-lg font-bold ${progress === 100 ? 'text-green-600' : 'text-indigo-600'}`}>
+                                {Math.round(progress)}%
+                            </span>
                         </div>
-                        <span className="text-sm text-slate-500">{completedTopics.size}/{course.topics.length} completed</span>
                     </div>
                 </div>
-                <Link
-                    to={`/quiz/${course.id}`}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-full font-bold shadow-lg shadow-indigo-500/30 transition-all transform hover:-translate-y-0.5 text-center"
-                >
-                    Take Quiz 📝
-                </Link>
             </div>
 
             <div className="space-y-4">
                 {course.topics.map((topic, index) => (
-                    <div key={topic.id} className={`bg-white border rounded-xl overflow-hidden shadow-sm ${completedTopics.has(topic.id) ? 'border-green-300 bg-green-50/30' : 'border-gray-200'
-                        }`}>
-                        <button
-                            onClick={() => setActiveTopic(activeTopic === topic.id ? null : topic.id)}
-                            className="w-full flex items-center justify-between p-5 text-left hover:bg-gray-50 transition-colors"
-                        >
+                    <Link
+                        key={topic.id}
+                        to={`/course/${course.id}/topic/${topic.id}`}
+                        className={`block bg-white border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all ${completedTopicsSet.has(topic.id) ? 'border-green-300 bg-green-50/30' : 'border-gray-200 hover:border-indigo-300'
+                            }`}
+                    >
+                        <div className="w-full flex items-center justify-between p-5">
                             <div className="flex items-center gap-4">
-                                <span className={`flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full text-sm font-bold ${completedTopics.has(topic.id)
-                                        ? 'bg-green-500 text-white'
-                                        : 'bg-slate-100 text-slate-600'
+                                <span className={`flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full text-sm font-bold ${completedTopicsSet.has(topic.id)
+                                    ? 'bg-green-500 text-white'
+                                    : 'bg-slate-100 text-slate-600'
                                     }`}>
-                                    {completedTopics.has(topic.id) ? '✓' : index + 1}
+                                    {completedTopicsSet.has(topic.id) ? (
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                        </svg>
+                                    ) : (
+                                        index + 1
+                                    )}
                                 </span>
-                                <span className={`font-semibold ${completedTopics.has(topic.id) ? 'text-green-800' : 'text-slate-800'
+                                <span className={`font-semibold ${completedTopicsSet.has(topic.id) ? 'text-green-800' : 'text-slate-800'
                                     }`}>{topic.title}</span>
                             </div>
-                            <span className="text-slate-400">
-                                {activeTopic === topic.id ? '−' : '+'}
+                            <span className="text-slate-400 group-hover:text-indigo-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                </svg>
                             </span>
-                        </button>
-
-                        {activeTopic === topic.id && (
-                            <div className="p-6 bg-slate-50 border-t border-gray-100">
-                                {/* Video Section */}
-                                <div className="mb-6">
-                                    <h4 className="font-bold text-slate-700 mb-3 flex items-center gap-2">
-                                        📺 Video Lecture
-                                    </h4>
-                                    <div className="aspect-video bg-black rounded-lg overflow-hidden">
-                                        <iframe
-                                            src={topic.videoUrl}
-                                            title={topic.title}
-                                            className="w-full h-full"
-                                            frameBorder="0"
-                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                            allowFullScreen
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Reading Material */}
-                                <div>
-                                    <h4 className="font-bold text-slate-700 mb-3 flex items-center gap-2">
-                                        📖 Reading Material
-                                    </h4>
-                                    <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm prose prose-slate prose-sm max-w-none">
-                                        <ReactMarkdown>{getTopicContent(topic)}</ReactMarkdown>
-                                    </div>
-                                </div>
-
-                                <div className="mt-6 pt-4 border-t border-gray-200 flex justify-end">
-                                    <button
-                                        onClick={() => handleMarkComplete(topic.id)}
-                                        className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${completedTopics.has(topic.id)
-                                                ? 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                                                : 'bg-green-600 text-white hover:bg-green-700'
-                                            }`}
-                                    >
-                                        {completedTopics.has(topic.id) ? 'Mark Incomplete' : 'Mark as Complete ✓'}
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-                    </div>
+                        </div>
+                    </Link>
                 ))}
             </div>
         </div>

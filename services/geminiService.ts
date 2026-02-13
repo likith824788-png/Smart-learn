@@ -45,7 +45,7 @@ Format in markdown with headers and bullet points. Be specific and actionable.`;
   }
 };
 
-export const generateQuizFeedback = async (courseName: string, score: number, total: number): Promise<string> => {
+export const generateQuizFeedback = async (courseName: string, score: number, total: number, missedQuestions: string[]): Promise<string> => {
   if (!apiKey || apiKey === 'PLACEHOLDER_API_KEY') {
     return score >= total / 2
       ? "Great job! You're making solid progress. Review any questions you missed and keep practicing!"
@@ -54,14 +54,18 @@ export const generateQuizFeedback = async (courseName: string, score: number, to
 
   const percentage = (score / total) * 100;
   const model = getModel();
-  const prompt = `A student completed a ${courseName} quiz with score ${score}/${total} (${percentage.toFixed(0)}%).
 
-Provide encouraging feedback in 2-3 sentences:
-- Acknowledge their performance appropriately
-- Give one specific improvement tip
-- End with motivation
+  let prompt = `A student completed a ${courseName} quiz with score ${score}/${total} (${percentage.toFixed(0)}%).`;
 
-Keep it friendly and supportive.`;
+  if (missedQuestions.length > 0) {
+    prompt += `\n\nThey missed questions related to: ${missedQuestions.join(', ')}.`;
+  }
+
+  prompt += `\n\nProvide personalized feedback in markdown format:
+1. Short encouraging summary (1 sentence).
+2. exactly 5 to 6 specific, actionable suggestions for improvement based on their performance and missed topics.
+3. Use bullet points for suggestions.
+4. Keep it friendly and supportive.`;
 
   try {
     const result = await model.generateContent(prompt);
