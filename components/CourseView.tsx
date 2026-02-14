@@ -14,7 +14,7 @@ const CourseView: React.FC<CourseViewProps> = ({ user }) => {
     const course = COURSES.find(c => c.id === id);
     const [activeTopic, setActiveTopic] = useState<string | null>(null);
     const completedTopicsSet = new Set(user.completedTopics || []);
-    const progress = (completedTopicsSet.size / course.topics.length) * 100;
+    const progress = course.topics.length > 0 ? (completedTopicsSet.size / course.topics.length) * 100 : 0;
 
     // Get extended content or fallback to basic content
     const getTopicContent = (topic: { id: string; bookContent: string }) => {

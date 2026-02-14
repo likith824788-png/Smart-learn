@@ -126,7 +126,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, setUser }) => {
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-xl">🎯</div>
               <div>
-                <p className="text-2xl font-bold text-slate-800">{Math.round((user.studyHoursPerWeek / 7) * 10) / 10} hrs</p>
+                <p className="text-2xl font-bold text-slate-800">{Math.round((Number(user.studyHoursPerWeek || 0) / 7) * 10) / 10} hrs</p>
                 <p className="text-xs text-slate-500">Target for Today</p>
               </div>
             </div>

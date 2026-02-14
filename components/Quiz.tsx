@@ -199,7 +199,7 @@ const Quiz: React.FC<QuizProps> = ({ user, setUser }) => {
   }
 
   const question = questions[currentQuestionIndex];
-  const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+  const progress = questions.length > 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0;
   const allAnswered = Object.keys(answers).length === questions.length;
 
   const handleExit = () => {

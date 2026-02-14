@@ -16,10 +16,60 @@ const getModel = () => {
   });
 };
 
+// --- Caching Helpers ---
+const CACHE_PREFIX = 'gemini_cache_';
+const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours
+
+interface CacheEntry<T> {
+  timestamp: number;
+  data: T;
+}
+
+const getFromCache = <T>(key: string): T | null => {
+  const cached = localStorage.getItem(CACHE_PREFIX + key);
+  if (!cached) return null;
+
+  try {
+    const entry: CacheEntry<T> = JSON.parse(cached);
+    if (Date.now() - entry.timestamp < CACHE_EXPIRY) {
+      return entry.data;
+    }
+    localStorage.removeItem(CACHE_PREFIX + key); // Expired
+  } catch (e) {
+    localStorage.removeItem(CACHE_PREFIX + key); // Invalid
+  }
+  return null;
+};
+
+const saveToCache = <T>(key: string, data: T) => {
+  const entry: CacheEntry<T> = {
+    timestamp: Date.now(),
+    data
+  };
+  try {
+    localStorage.setItem(CACHE_PREFIX + key, JSON.stringify(entry));
+  } catch (e) {
+    console.warn('Failed to save to Gemini cache (likely quota exceeded)', e);
+  }
+};
+
+const handleGeminiError = (error: any, fallbackMsg: string) => {
+  console.error("AI Error:", error);
+  if (error.message?.includes('429') || error.toString().includes('429')) {
+    return "⚠️ AI Usage Limit Exceeded. Please try again later (the free tier has daily limits). " + fallbackMsg;
+  }
+  return fallbackMsg;
+};
+
 export const generatePersonalizedStudyPlan = async (user: Omit<UserProfile, 'id' | 'joinedAt' | 'studyPlan'>): Promise<string> => {
   if (!apiKey || apiKey === 'PLACEHOLDER_API_KEY') {
     return "⚠️ Please configure your API key in the .env.local file to enable AI-powered study plans.";
   }
+
+  // Cache Key based on user attributes that affect the plan
+  const cacheKey = `study_plan_${user.cluster}_${user.studyHoursPerWeek}_${user.studySource}`;
+  const cached = getFromCache<string>(cacheKey);
+  if (cached) return cached;
 
   const model = getModel();
   const prompt = `Create a personalized weekly study plan for a student:
@@ -38,10 +88,11 @@ Format in markdown with headers and bullet points. Be specific and actionable.`;
   try {
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    return response.text();
+    const text = response.text();
+    saveToCache(cacheKey, text);
+    return text;
   } catch (error) {
-    console.error("AI Error:", error);
-    return "Unable to generate study plan. Please check your internet connection and try again.";
+    return handleGeminiError(error, "Unable to generate study plan at this time.");
   }
 };
 
@@ -51,6 +102,11 @@ export const generateQuizFeedback = async (courseName: string, score: number, to
       ? "Great job! You're making solid progress. Review any questions you missed and keep practicing!"
       : "Keep practicing! Review the course materials and try again. Focus on understanding the concepts.";
   }
+
+  // Cache key based on input parameters
+  const cacheKey = `feedback_${courseName}_${score}_${missedQuestions.sort().join('_')}`;
+  const cached = getFromCache<string>(cacheKey);
+  if (cached) return cached;
 
   const percentage = (score / total) * 100;
   const model = getModel();
@@ -70,10 +126,11 @@ export const generateQuizFeedback = async (courseName: string, score: number, to
   try {
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    return response.text();
+    const text = response.text();
+    saveToCache(cacheKey, text);
+    return text;
   } catch (error) {
-    console.error("AI Feedback Error:", error);
-    return "Good effort! Keep reviewing the materials and practicing regularly.";
+    return handleGeminiError(error, "Good effort! Keep reviewing the materials and practicing regularly.");
   }
 };
 
@@ -83,6 +140,10 @@ export const generateLearningRecommendations = async (user: UserProfile, history
   const recentHistory = history.slice(0, 3).map(h =>
     `${h.courseId}: ${h.percentage.toFixed(0)}%`
   ).join(', ');
+
+  const cacheKey = `recommendations_${user.cluster}_${recentHistory}`;
+  const cached = getFromCache<Recommendation[]>(cacheKey);
+  if (cached) return cached;
 
   const model = getModel();
   const prompt = `Based on quiz performance: ${recentHistory}
@@ -106,9 +167,12 @@ No markdown, just the JSON array.`;
 
     // Clean JSON
     const jsonString = text.replace(/```json\n|\n```|```/g, "").trim();
-    return JSON.parse(jsonString) as Recommendation[];
+    const recommendations = JSON.parse(jsonString) as Recommendation[];
+    saveToCache(cacheKey, recommendations);
+    return recommendations;
   } catch (error) {
-    console.error("AI Recommendations Error:", error);
+    console.error("AI Recommendations Error:", error); // Log original error
+    // For recommendations, we might return empty array if 429, effectively hiding the section
     return [];
   }
 };

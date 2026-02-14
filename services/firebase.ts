@@ -21,15 +21,15 @@ export const db = app.firestore();
 
 // Disable offline persistence to avoid "client is offline" errors
 // This forces Firestore to always fetch from network
-db.settings({
-  cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED,
-});
+// db.settings({
+//   cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED,
+// });
 
 // Disable persistence (uses network only)
-db.enablePersistence({ synchronizeTabs: false }).catch((err) => {
-  if (err.code === 'failed-precondition') {
-    console.warn('Firestore persistence unavailable - multiple tabs open');
-  } else if (err.code === 'unimplemented') {
-    console.warn('Firestore persistence not supported in this browser');
-  }
-});
+// db.enablePersistence({ synchronizeTabs: false }).catch((err) => {
+//   if (err.code === 'failed-precondition') {
+//     console.warn('Firestore persistence unavailable - multiple tabs open');
+//   } else if (err.code === 'unimplemented') {
+//     console.warn('Firestore persistence not supported in this browser');
+//   }
+// });
