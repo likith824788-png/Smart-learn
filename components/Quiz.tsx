@@ -15,7 +15,7 @@ const Quiz: React.FC<QuizProps> = ({ user, setUser }) => {
   const { courseId, topicId, quizId } = useParams();
   const navigate = useNavigate();
   const course = COURSES.find(c => c.id === courseId);
-  const topic = course?.topics.find(t => t.id === topicId); // Find topic if exists
+  const topic = course?.topics.find(t => t.id === topicId);
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<{ [key: number]: number }>({});
@@ -24,9 +24,8 @@ const Quiz: React.FC<QuizProps> = ({ user, setUser }) => {
   const [loadingFeedback, setLoadingFeedback] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
-  if (!course) return <div className="p-8 text-center text-slate-500">Course not found</div>;
+  if (!course) return <div className="p-8 text-center text-slate-400">Course not found</div>;
 
-  // Determine questions source
   let questions = course.quizQuestions;
   let quizTitle = course.title;
 
@@ -43,11 +42,11 @@ const Quiz: React.FC<QuizProps> = ({ user, setUser }) => {
     setAnswers(prev => ({ ...prev, [qId]: optionIndex }));
   };
 
-  const getBadgeColor = (badge: string) => {
-    if (badge.includes('Gold')) return 'text-yellow-600 bg-yellow-50 border-yellow-200';
-    if (badge.includes('Silver')) return 'text-slate-600 bg-slate-50 border-slate-200';
-    if (badge.includes('Bronze')) return 'text-orange-700 bg-orange-50 border-orange-200';
-    return 'text-green-700 bg-green-50 border-green-200';
+  const getBadgeStyle = (badge: string) => {
+    if (badge.includes('Gold')) return 'from-yellow-500/20 to-yellow-500/5 border-yellow-500/30 text-yellow-400';
+    if (badge.includes('Silver')) return 'from-slate-400/20 to-slate-400/5 border-slate-400/30 text-slate-300';
+    if (badge.includes('Bronze')) return 'from-amber-600/20 to-amber-600/5 border-amber-600/30 text-amber-500';
+    return 'from-emerald-500/20 to-emerald-500/5 border-emerald-500/30 text-emerald-400';
   };
 
   const handleSubmitConfirm = () => {
@@ -66,7 +65,6 @@ const Quiz: React.FC<QuizProps> = ({ user, setUser }) => {
     questions.forEach(q => {
       const isCorrect = answers[q.id] === q.correctAnswer;
       questionResults.push(isCorrect);
-
       if (isCorrect) {
         score++;
       } else {
@@ -75,21 +73,19 @@ const Quiz: React.FC<QuizProps> = ({ user, setUser }) => {
     });
 
     const percentage = (score / questions.length) * 100;
-
-    // Get Feedback
     const feedback = await generateQuizFeedback(quizTitle, score, questions.length, missedQuestions);
 
     const quizResult: QuizResult = {
       id: Date.now().toString(),
       courseId: course.id,
-      topicId: topicId, // Save topic ID if available
+      topicId: topicId,
       score,
       totalQuestions: questions.length,
       percentage,
       badge: calculateBadge(percentage),
       feedback,
       questionResults,
-      answers, // Save the full answers map
+      answers,
       date: new Date().toISOString()
     };
 
@@ -97,15 +93,11 @@ const Quiz: React.FC<QuizProps> = ({ user, setUser }) => {
     setResult(quizResult);
     setLoadingFeedback(false);
 
-    // Invalidate recommendations so they regenerate based on new scores
-    // Invalidate recommendations so they regenerate based on new scores
-    // Update completed topics if a topicId is present
     const updatedCompletedTopics = user.completedTopics ? [...user.completedTopics] : [];
     if (topicId && !updatedCompletedTopics.includes(topicId)) {
       updatedCompletedTopics.push(topicId);
     }
 
-    // Save updated user profile
     const updatedUser = {
       ...user,
       recommendations: [],
@@ -118,23 +110,23 @@ const Quiz: React.FC<QuizProps> = ({ user, setUser }) => {
 
   // Confirmation Modal
   const ConfirmationModal = () => (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
-        <h3 className="text-xl font-bold text-slate-800 mb-2">Submit Quiz?</h3>
-        <p className="text-slate-500 mb-6">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="glass-card rounded-2xl p-8 max-w-md w-full animate-fade-in">
+        <h3 className="text-xl font-bold text-white mb-2">Submit Quiz?</h3>
+        <p className="text-slate-400 text-sm mb-6">
           You've answered {Object.keys(answers).length} of {questions.length} questions.
           Are you sure you want to submit?
         </p>
         <div className="flex gap-3">
           <button
             onClick={() => setShowConfirmation(false)}
-            className="flex-1 py-2.5 border border-gray-300 rounded-lg font-medium text-slate-600 hover:bg-gray-50"
+            className="flex-1 py-3 bg-white/5 border border-white/10 rounded-xl font-medium text-slate-300 hover:bg-white/10 transition-all text-sm"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
-            className="flex-1 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700"
+            className="flex-1 py-3 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-emerald-500/20 transition-all text-sm"
           >
             Yes, Submit
           </button>
@@ -145,54 +137,58 @@ const Quiz: React.FC<QuizProps> = ({ user, setUser }) => {
 
   if (result) {
     return (
-      <div className="max-w-2xl mx-auto py-12 px-4 text-center">
-        <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
-          <div className="text-6xl mb-4">{result.percentage >= 50 ? '🎉' : '📚'}</div>
-          <h2 className="text-3xl font-bold text-slate-800 mb-2">Quiz Completed!</h2>
-          <p className="text-slate-500 mb-8">Here is how you performed on {quizTitle}</p>
+      <div className="min-h-screen bg-dark-950 flex items-center justify-center p-4">
+        <div className="max-w-2xl w-full animate-fade-in">
+          <div className="glass-card rounded-3xl p-10 text-center relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 via-violet-500 to-fuchsia-500"></div>
 
-          <div className="grid grid-cols-2 gap-4 mb-8">
-            <div className="bg-slate-50 p-4 rounded-xl">
-              <p className="text-sm text-slate-500">Score</p>
-              <p className="text-2xl font-bold text-indigo-600">{result.score} / {result.totalQuestions}</p>
-            </div>
-            <div className="bg-slate-50 p-4 rounded-xl">
-              <p className="text-sm text-slate-500">Badge Earned</p>
-              <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border ${getBadgeColor(result.badge)}`}>
-                {result.badge === 'Novice' ? (
-                  <span className="text-xl">🌱</span>
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={`w-6 h-6 ${result.badge === 'Gold' ? 'text-yellow-500' :
-                    result.badge === 'Silver' ? 'text-gray-400' :
-                      'text-amber-700'
-                    }`}>
-                    <path fillRule="evenodd" d="M5.166 2.621v.858c-1.035.148-2.059.33-3.071.543a.75.75 0 00-.584.859 6.753 6.753 0 006.138 5.6 6.73 6.73 0 002.743 1.346A6.707 6.707 0 019.279 15H8.54c-1.036 0-1.875.84-1.875 1.875V19.5h-.75a2.25 2.25 0 00-2.25 2.25c0 .414.336.75.75.75h14.625c.414 0 .75-.336.75-.75a2.25 2.25 0 00-2.25-2.25h-.75v-2.625c0-1.036-.84-1.875-1.875-1.875h-.739a6.706 6.706 0 01-1.112-3.173 6.73 6.73 0 002.743-1.347 6.753 6.753 0 006.139-5.6.75.75 0 00-.585-.858 47.077 47.077 0 00-3.07-.543V2.62a.75.75 0 00-.658-.744 49.22 49.22 0 00-6.093-.377c-2.063 0-4.096.128-6.093.377a.75.75 0 00-.657.744zm0 2.629c0 1.196.312 2.32.857 3.294A5.266 5.266 0 013.16 5.337a45.6 45.6 0 012.006-.343v.256zm13.5 0v-.256c.674.1 1.343.214 2.006.343a5.265 5.265 0 01-2.863 3.207 6.72 6.72 0 00.857-3.294z" clipRule="evenodd" />
-                  </svg>
-                )}
-                <span className="font-bold">{result.badge}</span>
+            <div className="text-6xl mb-5">{result.percentage >= 50 ? '🎉' : '📚'}</div>
+            <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Quiz Completed!</h2>
+            <p className="text-slate-400 text-sm mb-8">Here is how you performed on {quizTitle}</p>
+
+            <div className="grid grid-cols-2 gap-4 mb-8">
+              <div className="glass-light rounded-2xl p-5">
+                <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Score</p>
+                <p className="text-2xl font-bold gradient-text">{result.score} / {result.totalQuestions}</p>
+              </div>
+              <div className="glass-light rounded-2xl p-5">
+                <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Badge</p>
+                <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border bg-gradient-to-r ${getBadgeStyle(result.badge)}`}>
+                  {result.badge === 'Novice' ? (
+                    <span className="text-lg">🌱</span>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                      <path fillRule="evenodd" d="M5.166 2.621v.858c-1.035.148-2.059.33-3.071.543a.75.75 0 00-.584.859 6.753 6.753 0 006.138 5.6 6.73 6.73 0 002.743 1.346A6.707 6.707 0 019.279 15H8.54c-1.036 0-1.875.84-1.875 1.875V19.5h-.75a2.25 2.25 0 00-2.25 2.25c0 .414.336.75.75.75h14.625c.414 0 .75-.336.75-.75a2.25 2.25 0 00-2.25-2.25h-.75v-2.625c0-1.036-.84-1.875-1.875-1.875h-.739a6.706 6.706 0 01-1.112-3.173 6.73 6.73 0 002.743-1.347 6.753 6.753 0 006.139-5.6.75.75 0 00-.585-.858 47.077 47.077 0 00-3.07-.543V2.62a.75.75 0 00-.658-.744 49.22 49.22 0 00-6.093-.377c-2.063 0-4.096.128-6.093.377a.75.75 0 00-.657.744zm0 2.629c0 1.196.312 2.32.857 3.294A5.266 5.266 0 013.16 5.337a45.6 45.6 0 012.006-.343v.256zm13.5 0v-.256c.674.1 1.343.214 2.006.343a5.265 5.265 0 01-2.863 3.207 6.72 6.72 0 00.857-3.294z" clipRule="evenodd" />
+                    </svg>
+                  )}
+                  <span className="font-bold text-sm">{result.badge}</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-6 text-left mb-8">
-            <h3 className="font-bold text-indigo-900 mb-2 flex items-center gap-2">
-              💡 Smart Feedback
-            </h3>
-            {loadingFeedback ? (
-              <p className="text-sm text-indigo-700 animate-pulse">Generating insights...</p>
-            ) : (
-              <div className="text-sm text-indigo-800 leading-relaxed prose prose-indigo max-w-none">
-                <ReactMarkdown>{result.feedback}</ReactMarkdown>
-              </div>
-            )}
-          </div>
+            <div className="glass-light rounded-2xl p-6 text-left mb-8">
+              <h3 className="font-bold text-white mb-3 flex items-center gap-2 text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-cyan-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+                Smart Feedback
+              </h3>
+              {loadingFeedback ? (
+                <p className="text-sm text-slate-400 animate-pulse">Generating insights...</p>
+              ) : (
+                <div className="text-sm text-slate-300 leading-relaxed prose-dark prose max-w-none">
+                  <ReactMarkdown>{result.feedback}</ReactMarkdown>
+                </div>
+              )}
+            </div>
 
-          <button
-            onClick={() => navigate('/dashboard')}
-            className="w-full bg-slate-900 text-white font-bold py-3 rounded-xl hover:bg-slate-800 transition-colors"
-          >
-            Back to Dashboard
-          </button>
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="w-full btn-gradient text-white font-semibold py-3.5 rounded-xl text-sm tracking-wide"
+            >
+              Back to Dashboard
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -211,44 +207,50 @@ const Quiz: React.FC<QuizProps> = ({ user, setUser }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 md:p-10 relative">
+    <div className="min-h-screen bg-dark-950 p-6 md:p-10 relative">
       <button
         onClick={handleExit}
-        className="mb-8 flex items-center text-slate-500 hover:text-slate-800 font-medium transition-colors"
+        className="mb-8 flex items-center text-slate-500 hover:text-white font-medium transition-colors text-sm"
       >
-        <span className="mr-2 text-xl">✕</span> Exit Quiz
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+        </svg>
+        Exit Quiz
       </button>
 
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-3xl mx-auto animate-fade-in">
         {showConfirmation && <ConfirmationModal />}
 
         <div className="mb-6">
-          <div className="flex justify-between items-end mb-2">
-            <h2 className="text-xl font-bold text-slate-800">Question {currentQuestionIndex + 1}</h2>
-            <span className="text-sm text-slate-500">{currentQuestionIndex + 1} of {questions.length}</span>
+          <div className="flex justify-between items-end mb-3">
+            <h2 className="text-lg font-bold text-white">Question {currentQuestionIndex + 1}</h2>
+            <span className="text-sm text-slate-500 font-medium">{currentQuestionIndex + 1} of {questions.length}</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2.5">
-            <div className="bg-indigo-600 h-2.5 rounded-full transition-all duration-300" style={{ width: `${progress}%` }}></div>
+          <div className="w-full bg-dark-600 rounded-full h-1.5">
+            <div className="bg-gradient-to-r from-cyan-500 to-violet-500 h-1.5 rounded-full transition-all duration-500" style={{ width: `${progress}%` }}></div>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 min-h-[400px] flex flex-col">
-          <p className="text-lg font-medium text-slate-800 mb-8">{question.text}</p>
+        <div className="glass-card rounded-2xl p-8 min-h-[400px] flex flex-col">
+          <p className="text-lg font-medium text-white mb-8">{question.text}</p>
 
           <div className="space-y-3 flex-1">
             {question.options.map((option, idx) => (
               <button
                 key={idx}
                 onClick={() => handleOptionSelect(question.id, idx)}
-                className={`w-full text-left p-4 rounded-xl border-2 transition-all ${answers[question.id] === idx
-                  ? 'border-indigo-600 bg-indigo-50 text-indigo-900 font-medium'
-                  : 'border-gray-100 hover:border-gray-300 text-gray-600'
+                className={`w-full text-left p-4 rounded-xl border transition-all duration-200 ${answers[question.id] === idx
+                  ? 'bg-cyan-500/10 border-cyan-500/40 text-white shadow-lg shadow-cyan-500/5'
+                  : 'bg-dark-700/50 border-white/5 text-slate-300 hover:border-white/15 hover:bg-dark-600/50'
                   }`}
               >
-                <span className="inline-block w-6 h-6 rounded-full border border-current text-xs text-center leading-5 mr-3 opacity-50">
+                <span className={`inline-block w-6 h-6 rounded-full border text-xs text-center leading-6 mr-3 transition-all ${answers[question.id] === idx
+                  ? 'border-cyan-400 bg-cyan-500 text-white'
+                  : 'border-slate-600 text-slate-500'
+                  }`}>
                   {String.fromCharCode(65 + idx)}
                 </span>
-                {option}
+                <span className="text-sm">{option}</span>
               </button>
             ))}
           </div>
@@ -257,7 +259,7 @@ const Quiz: React.FC<QuizProps> = ({ user, setUser }) => {
             <button
               disabled={currentQuestionIndex === 0}
               onClick={() => setCurrentQuestionIndex(prev => prev - 1)}
-              className="px-6 py-2 text-slate-500 font-medium disabled:opacity-30 hover:text-slate-800"
+              className="px-6 py-2.5 text-slate-400 font-medium disabled:opacity-30 hover:text-white transition-colors text-sm"
             >
               Previous
             </button>
@@ -266,14 +268,14 @@ const Quiz: React.FC<QuizProps> = ({ user, setUser }) => {
               <button
                 onClick={handleSubmitConfirm}
                 disabled={!allAnswered}
-                className="px-8 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-bold shadow-lg shadow-green-500/30 disabled:opacity-50 disabled:shadow-none transition-all"
+                className="px-8 py-2.5 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white rounded-xl font-semibold disabled:opacity-50 disabled:shadow-none transition-all hover:shadow-lg hover:shadow-emerald-500/20 text-sm"
               >
                 Submit Quiz
               </button>
             ) : (
               <button
                 onClick={() => setCurrentQuestionIndex(prev => prev + 1)}
-                className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+                className="px-6 py-2.5 btn-gradient text-white rounded-xl font-medium transition-all text-sm"
               >
                 Next
               </button>
@@ -282,18 +284,18 @@ const Quiz: React.FC<QuizProps> = ({ user, setUser }) => {
         </div>
 
         {/* Question Navigator */}
-        <div className="mt-6 p-4 bg-white rounded-xl border border-gray-200">
-          <p className="text-sm font-medium text-slate-600 mb-3">Question Navigator</p>
+        <div className="mt-6 glass-card rounded-xl p-4">
+          <p className="text-xs font-medium text-slate-500 mb-3 uppercase tracking-wider">Question Navigator</p>
           <div className="flex flex-wrap gap-2">
             {questions.map((q, idx) => (
               <button
                 key={q.id}
                 onClick={() => setCurrentQuestionIndex(idx)}
-                className={`w-8 h-8 rounded-full text-xs font-bold transition-all ${currentQuestionIndex === idx
-                  ? 'bg-indigo-600 text-white'
+                className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${currentQuestionIndex === idx
+                  ? 'bg-gradient-to-br from-cyan-500 to-violet-500 text-white shadow-lg shadow-cyan-500/20'
                   : answers[q.id] !== undefined
-                    ? 'bg-green-100 text-green-700 border border-green-300'
-                    : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/20'
+                    : 'bg-dark-600 text-slate-500 hover:bg-dark-500'
                   }`}
               >
                 {idx + 1}

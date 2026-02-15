@@ -8,9 +8,9 @@ const genAI = new GoogleGenerativeAI(apiKey);
 // Helper to get model
 const getModel = () => {
   return genAI.getGenerativeModel({
-    model: "gemini-2.0-flash",
+    model: "gemma-3-27b-it",
     generationConfig: {
-      maxOutputTokens: 600,
+      maxOutputTokens: 1500,
       temperature: 0.7,
     }
   });
@@ -78,8 +78,8 @@ export const generatePersonalizedStudyPlan = async (user: Omit<UserProfile, 'id'
 - Preferred Learning: ${user.studySource === 'video' ? 'Video tutorials' : 'Reading materials'}
 
 Provide:
-1. Daily schedule breakdown
-2. Specific topics to focus on
+1. Daily schedule breakdown for ALL 7 days (Day 1 through Day 7). You MUST include every single day from Day 1 to Day 7 — do NOT stop early. Do NOT use weekday names like Monday, Tuesday, etc.
+2. Specific topics to focus on each day
 3. Practice recommendations
 4. Tips for their level
 

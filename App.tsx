@@ -70,10 +70,18 @@ const App: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gradient-to-br from-indigo-50 to-blue-100">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-indigo-600 font-medium">{loadingMessage}</p>
+      <div className="flex h-screen items-center justify-center bg-dark-950 relative overflow-hidden">
+        {/* Background orbs */}
+        <div className="orb w-96 h-96 bg-cyan-500 -top-20 -left-20" style={{ position: 'absolute' }}></div>
+        <div className="orb w-96 h-96 bg-violet-500 -bottom-20 -right-20" style={{ position: 'absolute' }}></div>
+
+        <div className="text-center animate-fade-in">
+          <div className="relative w-16 h-16 mx-auto mb-6">
+            <div className="absolute inset-0 rounded-full border-2 border-cyan-500/30"></div>
+            <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-cyan-400 animate-spin"></div>
+            <div className="absolute inset-2 rounded-full border-2 border-transparent border-t-violet-400 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
+          </div>
+          <p className="gradient-text font-semibold text-lg tracking-wide">{loadingMessage}</p>
         </div>
       </div>
     );

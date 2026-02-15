@@ -14,23 +14,26 @@ const CourseView: React.FC<CourseViewProps> = ({ user }) => {
     const course = COURSES.find(c => c.id === id);
     const [activeTopic, setActiveTopic] = useState<string | null>(null);
     const completedTopicsSet = new Set(user.completedTopics || []);
-    const progress = course.topics.length > 0 ? (completedTopicsSet.size / course.topics.length) * 100 : 0;
+    const completedInCourse = course.topics.filter(t => completedTopicsSet.has(t.id)).length;
+    const progress = course.topics.length > 0 ? (completedInCourse / course.topics.length) * 100 : 0;
 
-    // Get extended content or fallback to basic content
     const getTopicContent = (topic: { id: string; bookContent: string }) => {
         return TOPIC_CONTENT[topic.id] || topic.bookContent;
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6 md:p-10">
-            <Link to="/dashboard" className="mb-6 inline-flex items-center text-slate-600 hover:text-slate-900 transition-colors">
-                <span className="mr-2">←</span> Back to Dashboard
+        <div className="min-h-screen bg-dark-950 p-6 md:p-10">
+            <Link to="/dashboard" className="mb-8 inline-flex items-center text-slate-400 hover:text-cyan-400 transition-colors text-sm font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+                </svg>
+                Back to Dashboard
             </Link>
 
-            <div className="max-w-5xl mx-auto pb-12">
-                <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+            <div className="max-w-5xl mx-auto pb-12 animate-fade-in">
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
+                        <h1 className="text-3xl font-bold text-white flex items-center gap-3 tracking-tight">
                             {course.icon.startsWith('http') ? (
                                 <img src={course.icon} alt={course.title} className="h-10 w-10 object-contain" />
                             ) : (
@@ -38,45 +41,55 @@ const CourseView: React.FC<CourseViewProps> = ({ user }) => {
                             )}
                             <span>{course.title}</span>
                         </h1>
+                        <p className="text-slate-400 mt-2 text-sm">{course.description}</p>
                     </div>
 
-                    {/* Speedometer Gauge - Moved to top right */}
-                    <div className="relative w-32 h-16 mr-4">
-                        <svg viewBox="0 0 100 50" className="w-full h-full overflow-visible">
-                            {/* Background Arc */}
-                            <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#e2e8f0" strokeWidth="10" strokeLinecap="round" />
-                            {/* Foreground Arc */}
-                            <path
-                                d={`M 10 50 A 40 40 0 0 1 ${50 - 40 * Math.cos((progress / 100) * Math.PI)} ${50 - 40 * Math.sin((progress / 100) * Math.PI)}`}
-                                fill="none"
-                                stroke={progress === 100 ? "#22c55e" : "#4f46e5"}
-                                strokeWidth="10"
-                                strokeLinecap="round"
-                                className="transition-all duration-1000 ease-out"
-                            />
-                        </svg>
-                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-center -mb-2">
-                            <span className={`text-lg font-bold ${progress === 100 ? 'text-green-600' : 'text-indigo-600'}`}>
-                                {Math.round(progress)}%
-                            </span>
+                    {/* Progress Gauge */}
+                    <div className="flex items-center gap-4">
+                        <div className="relative w-20 h-20">
+                            <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90">
+                                <path
+                                    d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831 15.9155 15.9155 0 0 1 0 -31.831"
+                                    fill="none"
+                                    stroke="rgba(148, 163, 184, 0.1)"
+                                    strokeWidth="3"
+                                />
+                                <path
+                                    d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831 15.9155 15.9155 0 0 1 0 -31.831"
+                                    fill="none"
+                                    stroke="url(#progressGradient)"
+                                    strokeWidth="3"
+                                    strokeDasharray={`${progress}, 100`}
+                                    strokeLinecap="round"
+                                    className="transition-all duration-1000 ease-out"
+                                />
+                                <defs>
+                                    <linearGradient id="progressGradient">
+                                        <stop offset="0%" stopColor="#06b6d4" />
+                                        <stop offset="100%" stopColor="#8b5cf6" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <span className="text-lg font-bold text-white">{Math.round(progress)}%</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="max-w-5xl mx-auto space-y-3">
                 {course.topics.map((topic, index) => (
                     <Link
                         key={topic.id}
                         to={`/course/${course.id}/topic/${topic.id}`}
-                        className={`block bg-white border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all ${completedTopicsSet.has(topic.id) ? 'border-green-300 bg-green-50/30' : 'border-gray-200 hover:border-indigo-300'
-                            }`}
+                        className={`block glass-card rounded-xl overflow-hidden ${completedTopicsSet.has(topic.id) ? 'border-emerald-500/20' : ''}`}
                     >
                         <div className="w-full flex items-center justify-between p-5">
                             <div className="flex items-center gap-4">
-                                <span className={`flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full text-sm font-bold ${completedTopicsSet.has(topic.id)
-                                    ? 'bg-green-500 text-white'
-                                    : 'bg-slate-100 text-slate-600'
+                                <span className={`flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-xl text-sm font-bold transition-all ${completedTopicsSet.has(topic.id)
+                                    ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20'
+                                    : 'bg-dark-500 text-slate-400'
                                     }`}>
                                     {completedTopicsSet.has(topic.id) ? (
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -86,10 +99,11 @@ const CourseView: React.FC<CourseViewProps> = ({ user }) => {
                                         index + 1
                                     )}
                                 </span>
-                                <span className={`font-semibold ${completedTopicsSet.has(topic.id) ? 'text-green-800' : 'text-slate-800'
-                                    }`}>{topic.title}</span>
+                                <span className={`font-medium text-sm ${completedTopicsSet.has(topic.id) ? 'text-emerald-400' : 'text-slate-200'}`}>
+                                    {topic.title}
+                                </span>
                             </div>
-                            <span className="text-slate-400 group-hover:text-indigo-500">
+                            <span className="text-slate-600 group-hover:text-cyan-400 transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                     <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
                                 </svg>
