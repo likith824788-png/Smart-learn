@@ -8,9 +8,10 @@ export const determineCluster = (score: number): ClusterType => {
 };
 
 export const calculateBadge = (percentage: number) => {
-  if (percentage >= 90) return 'Gold';
-  if (percentage >= 75) return 'Silver';
-  if (percentage >= 50) return 'Bronze';
+  const correct = Math.round(percentage / 10); // assumes 10 questions per quiz
+  if (correct >= 9) return 'Gold';
+  if (correct >= 7) return 'Silver';
+  if (correct >= 4) return 'Bronze';
   return 'Novice';
 };
 
