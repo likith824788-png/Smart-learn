@@ -79,6 +79,7 @@ const Quiz: React.FC<QuizProps> = ({ user, setUser }) => {
       id: Date.now().toString(),
       courseId: course.id,
       topicId: topicId,
+      quizId: quizId,
       score,
       totalQuestions: questions.length,
       percentage,
@@ -93,19 +94,31 @@ const Quiz: React.FC<QuizProps> = ({ user, setUser }) => {
     setResult(quizResult);
     setLoadingFeedback(false);
 
-    const updatedCompletedTopics = user.completedTopics ? [...user.completedTopics] : [];
-    if (topicId && !updatedCompletedTopics.includes(topicId)) {
-      updatedCompletedTopics.push(topicId);
+    // Check if ALL quizzes in this topic are now completed
+    if (topicId && topic && topic.quizzes) {
+      const history = await import('../services/storageService').then(m => m.getQuizHistory(user.id, 500));
+      const allHistory = await history;
+      const topicQuizIds = topic.quizzes.filter(q => q.id !== 'coding').map(q => q.id);
+      const completedQuizIds = new Set(
+        allHistory.filter(h => h.topicId === topicId && h.quizId).map(h => h.quizId!)
+      );
+      // Include the quiz we just submitted
+      if (quizId) completedQuizIds.add(quizId);
+      const allComplete = topicQuizIds.every(id => completedQuizIds.has(id));
+
+      const updatedCompletedTopics = user.completedTopics ? [...user.completedTopics] : [];
+      if (allComplete && !updatedCompletedTopics.includes(topicId)) {
+        updatedCompletedTopics.push(topicId);
+      }
+
+      const updatedUser = {
+        ...user,
+        recommendations: [],
+        completedTopics: updatedCompletedTopics
+      };
+      await saveUser(updatedUser);
+      setUser(updatedUser);
     }
-
-    const updatedUser = {
-      ...user,
-      recommendations: [],
-      completedTopics: updatedCompletedTopics
-    };
-
-    await saveUser(updatedUser);
-    setUser(updatedUser);
   };
 
   // Confirmation Modal
@@ -232,7 +245,7 @@ const Quiz: React.FC<QuizProps> = ({ user, setUser }) => {
         </div>
 
         <div className="glass-card rounded-2xl p-8 min-h-[400px] flex flex-col">
-          <p className="text-lg font-medium text-white mb-8">{question.text}</p>
+          <p className="text-lg font-medium text-white mb-8 whitespace-pre-wrap">{question.text}</p>
 
           <div className="space-y-3 flex-1">
             {question.options.map((option, idx) => (

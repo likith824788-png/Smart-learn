@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { UserProfile, ClusterType, Recommendation } from '../types';
+import { UserProfile, ClusterType, Recommendation, QuizResult } from '../types';
 import { COURSES } from '../constants';
 import { Link } from 'react-router-dom';
 import { generateLearningRecommendations, generatePersonalizedStudyPlan } from '../services/geminiService';
@@ -15,6 +15,34 @@ const Dashboard: React.FC<DashboardProps> = ({ user, setUser }) => {
   const [loadingRecs, setLoadingRecs] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showFullPlan, setShowFullPlan] = useState(false);
+  const [trueCompletedTopics, setTrueCompletedTopics] = useState<Set<string>>(new Set());
+
+  // Compute truly completed topics from quiz history
+  useEffect(() => {
+    const computeCompletion = async () => {
+      if (!user?.id) return;
+      const history = await getQuizHistory(user.id, 500);
+      const completed = new Set<string>();
+
+      COURSES.forEach(course => {
+        course.topics.forEach(topic => {
+          if (!topic.quizzes || topic.quizzes.length === 0) return;
+          const quizIds = topic.quizzes.filter(q => q.id !== 'coding').map(q => q.id);
+          if (quizIds.length === 0) return;
+
+          const completedQuizIds = new Set(
+            history.filter(h => h.topicId === topic.id && h.quizId).map(h => h.quizId!)
+          );
+          if (quizIds.every(qid => completedQuizIds.has(qid))) {
+            completed.add(topic.id);
+          }
+        });
+      });
+
+      setTrueCompletedTopics(completed);
+    };
+    computeCompletion();
+  }, [user?.id]);
 
   const handleRefreshPlan = async () => {
     setIsRefreshing(true);
@@ -298,8 +326,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, setUser }) => {
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-12">
         {COURSES.map(course => {
-          const completedTopicsSet = new Set(user.completedTopics || []);
-          const completedInCourse = course.topics.filter(t => completedTopicsSet.has(t.id)).length;
+          const completedInCourse = course.topics.filter(t => trueCompletedTopics.has(t.id)).length;
           const courseProgress = course.topics.length > 0 ? Math.round((completedInCourse / course.topics.length) * 100) : 0;
 
           return (

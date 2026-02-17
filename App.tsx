@@ -7,6 +7,7 @@ import Dashboard from './components/Dashboard';
 import CourseView from './components/CourseView';
 import TopicView from './components/TopicView';
 import Quiz from './components/Quiz';
+import CodingEditor from './components/CodingEditor';
 import Profile from './components/Profile';
 import History from './components/History';
 import QuizReview from './components/QuizReview';
@@ -107,11 +108,15 @@ const App: React.FC = () => {
 
         {/* Distraction-Free Topic View (No Layout) */}
         <Route path="/course/:courseId/topic/:topicId" element={
-          user ? <TopicView /> : <Navigate to="/" />
+          user ? <TopicView user={user} /> : <Navigate to="/" />
         } />
 
         <Route path="/course/:courseId/topic/:topicId/quiz/:quizId" element={
           user ? <Quiz user={user} setUser={setUser} /> : <Navigate to="/" />
+        } />
+
+        <Route path="/course/:courseId/topic/:topicId/coding" element={
+          user ? <CodingEditor /> : <Navigate to="/" />
         } />
 
         <Route path="/quiz/:courseId" element={

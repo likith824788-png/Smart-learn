@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { COURSES } from '../constants';
 import { TOPIC_CONTENT } from '../topicContent';
-import { UserProfile } from '../types';
+import { UserProfile, QuizResult } from '../types';
+import { getQuizHistory } from '../services/storageService';
 
 interface CourseViewProps {
     user: UserProfile;
@@ -13,9 +14,36 @@ const CourseView: React.FC<CourseViewProps> = ({ user }) => {
     const { id } = useParams();
     const course = COURSES.find(c => c.id === id);
     const [activeTopic, setActiveTopic] = useState<string | null>(null);
-    const completedTopicsSet = new Set(user.completedTopics || []);
-    const completedInCourse = course.topics.filter(t => completedTopicsSet.has(t.id)).length;
-    const progress = course.topics.length > 0 ? (completedInCourse / course.topics.length) * 100 : 0;
+    const [trueCompletedTopics, setTrueCompletedTopics] = useState<Set<string>>(new Set());
+
+    // Compute truly completed topics from quiz history
+    useEffect(() => {
+        const computeCompletion = async () => {
+            if (!user?.id || !course) return;
+            const history = await getQuizHistory(user.id, 500);
+            const completed = new Set<string>();
+
+            course.topics.forEach(topic => {
+                if (!topic.quizzes || topic.quizzes.length === 0) return;
+                const quizIds = topic.quizzes.filter(q => q.id !== 'coding').map(q => q.id);
+                if (quizIds.length === 0) return;
+
+                // Check if each quiz has at least one result
+                const completedQuizIds = new Set(
+                    history.filter(h => h.topicId === topic.id && h.quizId).map(h => h.quizId!)
+                );
+                if (quizIds.every(qid => completedQuizIds.has(qid))) {
+                    completed.add(topic.id);
+                }
+            });
+
+            setTrueCompletedTopics(completed);
+        };
+        computeCompletion();
+    }, [user?.id, course]);
+
+    const completedInCourse = course ? course.topics.filter(t => trueCompletedTopics.has(t.id)).length : 0;
+    const progress = course && course.topics.length > 0 ? (completedInCourse / course.topics.length) * 100 : 0;
 
     const getTopicContent = (topic: { id: string; bookContent: string }) => {
         return TOPIC_CONTENT[topic.id] || topic.bookContent;
@@ -83,15 +111,15 @@ const CourseView: React.FC<CourseViewProps> = ({ user }) => {
                     <Link
                         key={topic.id}
                         to={`/course/${course.id}/topic/${topic.id}`}
-                        className={`block glass-card rounded-xl overflow-hidden ${completedTopicsSet.has(topic.id) ? 'border-emerald-500/20' : ''}`}
+                        className={`block glass-card rounded-xl overflow-hidden ${trueCompletedTopics.has(topic.id) ? 'border-emerald-500/20' : ''}`}
                     >
                         <div className="w-full flex items-center justify-between p-5">
                             <div className="flex items-center gap-4">
-                                <span className={`flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-xl text-sm font-bold transition-all ${completedTopicsSet.has(topic.id)
+                                <span className={`flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-xl text-sm font-bold transition-all ${trueCompletedTopics.has(topic.id)
                                     ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20'
                                     : 'bg-dark-500 text-slate-400'
                                     }`}>
-                                    {completedTopicsSet.has(topic.id) ? (
+                                    {trueCompletedTopics.has(topic.id) ? (
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                         </svg>
@@ -99,7 +127,7 @@ const CourseView: React.FC<CourseViewProps> = ({ user }) => {
                                         index + 1
                                     )}
                                 </span>
-                                <span className={`font-medium text-sm ${completedTopicsSet.has(topic.id) ? 'text-emerald-400' : 'text-slate-200'}`}>
+                                <span className={`font-medium text-sm ${trueCompletedTopics.has(topic.id) ? 'text-emerald-400' : 'text-slate-200'}`}>
                                     {topic.title}
                                 </span>
                             </div>

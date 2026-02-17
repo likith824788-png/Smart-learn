@@ -1,4 +1,5 @@
 import { Course, ClusterType } from './types';
+import { PYTHON_EXTRA_QUIZZES } from './pythonQuizData';
 
 export const determineCluster = (score: number): ClusterType => {
   if (score >= 7) return ClusterType.ADVANCE;
@@ -873,3 +874,24 @@ export const COURSES: Course[] = [
     ]
   }
 ];
+
+// Rename existing quizzes and merge additional quizzes
+COURSES.forEach(course => {
+  course.topics.forEach(topic => {
+    if (topic.quizzes && topic.quizzes.length > 0) {
+      // Rename existing assessment quiz to basics
+      if (topic.quizzes[0].id === 'assessment') {
+        topic.quizzes[0].id = 'basics';
+        topic.quizzes[0].title = '📗 Basics';
+      }
+    }
+    // Add intermediate quiz (not coding — coding is now the editor)
+    const extra = PYTHON_EXTRA_QUIZZES[topic.id];
+    if (extra && topic.quizzes) {
+      const intermediate = extra.find(q => q.id === 'intermediate');
+      if (intermediate) topic.quizzes.push(intermediate);
+      // Add a placeholder entry for the coding challenge card
+      topic.quizzes.push({ id: 'coding', title: '💻 Coding Challenge', questions: [] });
+    }
+  });
+});

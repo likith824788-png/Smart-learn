@@ -31,6 +31,7 @@ export interface QuizResult {
   id: string;
   courseId: string;
   topicId?: string; // Added for granular history
+  quizId?: string; // Specific quiz within the topic
   score: number;
   totalQuestions: number;
   percentage: number;
@@ -52,6 +53,17 @@ export interface TopicQuiz {
   id: string;
   title: string;
   questions: Question[];
+}
+
+export interface CodingChallenge {
+  id: number;
+  title: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  problemStatement: string;
+  hints: string[];
+  task: string;
+  starterCode: string;
+  expectedOutput: string;
 }
 
 export interface Topic {
