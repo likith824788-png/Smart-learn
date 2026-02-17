@@ -54,16 +54,16 @@ const saveToCache = <T>(key: string, data: T) => {
 };
 
 const handleGeminiError = (error: any, fallbackMsg: string) => {
-  console.error("AI Error:", error);
+  console.error("System Error:", error);
   if (error.message?.includes('429') || error.toString().includes('429')) {
-    return "⚠️ AI Usage Limit Exceeded. Please try again later (the free tier has daily limits). " + fallbackMsg;
+    return "⚠️ System Usage Limit Exceeded. Please try again later (the free tier has daily limits). " + fallbackMsg;
   }
   return fallbackMsg;
 };
 
 export const generatePersonalizedStudyPlan = async (user: Omit<UserProfile, 'id' | 'joinedAt' | 'studyPlan'>): Promise<string> => {
   if (!apiKey || apiKey === 'PLACEHOLDER_API_KEY') {
-    return "⚠️ Please configure your API key in the .env.local file to enable AI-powered study plans.";
+    return "⚠️ Please configure your API key in the .env.local file to enable smart study plans.";
   }
 
   // Cache Key based on user attributes that affect the plan
@@ -171,7 +171,7 @@ No markdown, just the JSON array.`;
     saveToCache(cacheKey, recommendations);
     return recommendations;
   } catch (error) {
-    console.error("AI Recommendations Error:", error); // Log original error
+    console.error("Smart Recommendations Error:", error); // Log original error
     // For recommendations, we might return empty array if 429, effectively hiding the section
     return [];
   }

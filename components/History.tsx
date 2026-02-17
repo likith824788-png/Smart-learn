@@ -19,7 +19,7 @@ const History: React.FC<HistoryProps> = ({ user }) => {
 
     useEffect(() => {
         const loadHistory = async () => {
-            const h = await getQuizHistory(user.id);
+            const h = await getQuizHistory(user.id, 100);
             setHistory(h);
             setLoading(false);
         };

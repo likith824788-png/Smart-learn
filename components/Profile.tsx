@@ -110,7 +110,7 @@ const Profile: React.FC<ProfileProps> = ({ user, setUser }) => {
 
     useEffect(() => {
         const loadHistory = async () => {
-            const h = await getQuizHistory(user.id);
+            const h = await getQuizHistory(user.id, 500);
             setHistory(h);
         };
         loadHistory();

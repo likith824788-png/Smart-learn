@@ -24,7 +24,7 @@ const QuizReview: React.FC<QuizReviewProps> = ({ user }) => {
     useEffect(() => {
         const loadData = async () => {
             if (!resultId) return;
-            const history = await getQuizHistory(user.id);
+            const history = await getQuizHistory(user.id, 500);
             const foundResult = history.find(r => r.id === resultId);
 
             if (foundResult) {

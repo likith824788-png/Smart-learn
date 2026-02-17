@@ -15,33 +15,48 @@ const Dashboard: React.FC<DashboardProps> = ({ user, setUser }) => {
   const [loadingRecs, setLoadingRecs] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showFullPlan, setShowFullPlan] = useState(false);
-  const [trueCompletedTopics, setTrueCompletedTopics] = useState<Set<string>>(new Set());
+  const [courseProgress, setCourseProgress] = useState<Record<string, number>>({});
 
-  // Compute truly completed topics from quiz history
+  // Compute progress based on completed quizzes
   useEffect(() => {
-    const computeCompletion = async () => {
+    const computeProgress = async () => {
       if (!user?.id) return;
       const history = await getQuizHistory(user.id, 500);
-      const completed = new Set<string>();
+      const progressMap: Record<string, number> = {};
 
       COURSES.forEach(course => {
+        let totalQuizzes = 0;
+        let completedQuizzes = 0;
+
         course.topics.forEach(topic => {
           if (!topic.quizzes || topic.quizzes.length === 0) return;
-          const quizIds = topic.quizzes.filter(q => q.id !== 'coding').map(q => q.id);
-          if (quizIds.length === 0) return;
 
-          const completedQuizIds = new Set(
-            history.filter(h => h.topicId === topic.id && h.quizId).map(h => h.quizId!)
-          );
-          if (quizIds.every(qid => completedQuizIds.has(qid))) {
-            completed.add(topic.id);
-          }
+          // Filter out coding challenges if they are not tracked in history the same way, 
+          // or if they are separate. The original code filtered 'coding'.
+          const validQuizzes = topic.quizzes.filter(q => q.id !== 'coding'); // Adjust 'coding' id if necessary based on your data
+
+          if (validQuizzes.length === 0) return;
+
+          totalQuizzes += validQuizzes.length;
+
+          validQuizzes.forEach(quiz => {
+            const isCompleted = history.some(h =>
+              h.courseId === course.id &&
+              h.topicId === topic.id &&
+              h.quizId === quiz.id
+            );
+            if (isCompleted) {
+              completedQuizzes++;
+            }
+          });
         });
+
+        progressMap[course.id] = totalQuizzes > 0 ? Math.round((completedQuizzes / totalQuizzes) * 100) : 0;
       });
 
-      setTrueCompletedTopics(completed);
+      setCourseProgress(progressMap);
     };
-    computeCompletion();
+    computeProgress();
   }, [user?.id]);
 
   const handleRefreshPlan = async () => {
@@ -61,7 +76,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, setUser }) => {
   useEffect(() => {
     const checkRecommendations = async () => {
       if (!user.recommendations || user.recommendations.length === 0) {
-        const history = await getQuizHistory(user.id);
+        const history = await getQuizHistory(user.id, 500);
         if (history.length > 0) {
           setLoadingRecs(true);
           const recs = await generateLearningRecommendations(user, history);
@@ -264,7 +279,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, setUser }) => {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-violet-400" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
                 </svg>
-                AI Study Strategy
+                Smart Study Strategy
               </h3>
               <button
                 onClick={handleRefreshPlan}
@@ -326,8 +341,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, setUser }) => {
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-12">
         {COURSES.map(course => {
-          const completedInCourse = course.topics.filter(t => trueCompletedTopics.has(t.id)).length;
-          const courseProgress = course.topics.length > 0 ? Math.round((completedInCourse / course.topics.length) * 100) : 0;
+          const currentProgress = courseProgress[course.id] || 0;
 
           return (
             <Link key={course.id} to={`/course/${course.id}`} className="glass-card rounded-2xl overflow-hidden group block">
@@ -346,18 +360,18 @@ const Dashboard: React.FC<DashboardProps> = ({ user, setUser }) => {
                 <div className="mb-4">
                   <div className="flex justify-between items-center mb-1.5">
                     <span className="text-xs text-slate-500">Progress</span>
-                    <span className="text-xs font-bold text-cyan-400">{courseProgress}%</span>
+                    <span className="text-xs font-bold text-cyan-400">{currentProgress}%</span>
                   </div>
                   <div className="w-full bg-dark-500 rounded-full h-1.5">
                     <div
                       className="bg-gradient-to-r from-cyan-500 to-violet-500 h-1.5 rounded-full transition-all duration-700"
-                      style={{ width: `${courseProgress}%` }}
+                      style={{ width: `${currentProgress}%` }}
                     ></div>
                   </div>
                 </div>
 
                 <div className="flex items-center text-sm font-medium text-cyan-400 group-hover:text-cyan-300 transition-colors gap-1">
-                  {courseProgress > 0 ? 'Continue Learning' : 'Start Learning'}
+                  {currentProgress > 0 ? 'Continue Learning' : 'Start Learning'}
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
                   </svg>
