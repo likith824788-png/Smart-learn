@@ -34,10 +34,13 @@ const QuizReview: React.FC<QuizReviewProps> = ({ user }) => {
                     let quizQuestions = course.quizQuestions;
                     if (foundResult.topicId) {
                         const topic = course.topics.find(t => t.id === foundResult.topicId);
-                        if (topic?.quizzes) {
-                            if (topic.quizzes.length > 0) {
-                                quizQuestions = topic.quizzes[0].questions;
+                        if (topic?.quizzes && foundResult.quizId) {
+                            const matchedQuiz = topic.quizzes.find(q => q.id === foundResult.quizId);
+                            if (matchedQuiz && matchedQuiz.questions.length > 0) {
+                                quizQuestions = matchedQuiz.questions;
                             }
+                        } else if (topic?.quizzes && topic.quizzes.length > 0) {
+                            quizQuestions = topic.quizzes[0].questions;
                         }
                     }
                     setQuestions(quizQuestions);

@@ -165,12 +165,29 @@ const History: React.FC<HistoryProps> = ({ user }) => {
                             <div className="p-5 flex flex-col md:flex-row items-center justify-between gap-4">
                                 <div className="flex-1">
                                     <h4 className="font-bold text-white text-sm flex items-center gap-2">
-                                        {getCourseName(quiz.courseId)}
-                                        {quiz.topicId && (
-                                            <span className="text-slate-500 font-normal text-xs">
-                                                : {COURSES.find(c => c.id === quiz.courseId)?.topics.find(t => t.id === quiz.topicId)?.title || quiz.topicId}
-                                            </span>
-                                        )}
+                                        {(() => {
+                                            const course = COURSES.find(c => c.id === quiz.courseId);
+                                            const topic = course?.topics.find(t => t.id === quiz.topicId);
+                                            const topicIndex = topic ? course!.topics.indexOf(topic) + 1 : null;
+                                            const quizObj = topic?.quizzes?.find(q => q.id === quiz.quizId);
+                                            const quizName = quizObj?.title || quiz.quizId || '';
+
+                                            return (
+                                                <>
+                                                    {getCourseName(quiz.courseId)}
+                                                    {topic && (
+                                                        <span className="text-slate-500 font-normal text-xs">
+                                                            : Topic-{topicIndex}
+                                                        </span>
+                                                    )}
+                                                    {quizName && (
+                                                        <span className="text-cyan-400/70 font-normal text-xs">
+                                                            — {quizName}
+                                                        </span>
+                                                    )}
+                                                </>
+                                            );
+                                        })()}
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={`w-4 h-4 text-slate-500 transition-transform ${expandedQuizId === quiz.id ? 'rotate-180' : ''}`}>
                                             <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
                                         </svg>
