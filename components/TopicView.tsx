@@ -162,7 +162,7 @@ const TopicView: React.FC<TopicViewProps> = ({ user }) => {
                         </svg>
                         Back to Course
                     </Link>
-                    <h1 className="text-sm font-bold text-white truncate max-w-md">
+                    <h1 className="text-xs md:text-sm font-bold text-white truncate max-w-[200px] md:max-w-md">
                         {topic.title}
                     </h1>
                 </div>
@@ -194,7 +194,7 @@ const TopicView: React.FC<TopicViewProps> = ({ user }) => {
                         </div>
                         Reading Material
                     </h2>
-                    <div className="glass-card rounded-2xl p-8 relative">
+                    <div className="glass-card rounded-2xl p-5 md:p-8 relative">
                         <div className={`prose-dark prose prose-lg max-w-none transition-all duration-500 ease-in-out ${isExpanded ? 'max-h-none' : 'max-h-[500px] overflow-hidden'}`}>
                             <ReactMarkdown>{topicContent}</ReactMarkdown>
                         </div>

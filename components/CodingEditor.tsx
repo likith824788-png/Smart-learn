@@ -322,7 +322,7 @@ sys.stderr = io.StringIO()
             )}
 
             {/* Top Bar */}
-            <div className="glass border-b border-white/5 px-4 h-14 flex items-center justify-between shrink-0 z-10">
+            <div className="glass border-b border-white/5 px-3 md:px-4 py-2 md:h-14 flex flex-wrap md:flex-nowrap items-center justify-between shrink-0 z-10 gap-2">
                 <div className="flex items-center gap-4">
                     <button
                         onClick={() => navigate(`/course/${courseId}/topic/${topicId}`)}
@@ -334,16 +334,16 @@ sys.stderr = io.StringIO()
                         Back
                     </button>
                     <div className="h-5 w-px bg-white/10" />
-                    <h1 className="text-sm font-bold text-white truncate">
-                        💻 {topic.title} — Coding Challenges
+                    <h1 className="text-xs md:text-sm font-bold text-white truncate max-w-[150px] md:max-w-none">
+                        💻 {topic.title} — Coding
                     </h1>
                 </div>
                 {/* Challenge navigation tabs + prev/next + submit */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 md:gap-2 overflow-x-auto">
                     <button
                         onClick={() => setCurrentIdx(i => Math.max(0, i - 1))}
                         disabled={currentIdx === 0}
-                        className="text-sm font-medium text-slate-400 hover:text-cyan-400 disabled:text-slate-700 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
+                        className="text-xs md:text-sm font-medium text-slate-400 hover:text-cyan-400 disabled:text-slate-700 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -365,7 +365,7 @@ sys.stderr = io.StringIO()
                                 <button
                                     key={c.id}
                                     onClick={() => setCurrentIdx(i)}
-                                    className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${btnClass}`}
+                                    className={`w-7 h-7 md:w-8 md:h-8 rounded-lg text-xs font-bold transition-all shrink-0 ${btnClass}`}
                                 >
                                     {i + 1}
                                 </button>
@@ -375,7 +375,7 @@ sys.stderr = io.StringIO()
                     <button
                         onClick={() => setCurrentIdx(i => Math.min(challenges.length - 1, i + 1))}
                         disabled={currentIdx === challenges.length - 1}
-                        className="text-sm font-medium text-slate-400 hover:text-cyan-400 disabled:text-slate-700 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
+                        className="text-xs md:text-sm font-medium text-slate-400 hover:text-cyan-400 disabled:text-slate-700 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
                     >
                         Next
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -392,10 +392,10 @@ sys.stderr = io.StringIO()
                 </div>
             </div>
 
-            {/* Split Pane */}
-            <div className="flex flex-1 overflow-hidden">
+            {/* Split Pane — stacks vertically on mobile */}
+            <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
                 {/* LEFT PANEL — Problem Statement */}
-                <div className="w-[40%] border-r border-white/5 flex flex-col overflow-hidden">
+                <div className="w-full md:w-[40%] border-b md:border-b-0 md:border-r border-white/5 flex flex-col overflow-hidden max-h-[40vh] md:max-h-none">
                     <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
                         {/* Title & Difficulty */}
                         <div className="flex items-center gap-3 mb-5">
@@ -453,7 +453,7 @@ sys.stderr = io.StringIO()
                 </div>
 
                 {/* RIGHT PANEL — Code Editor & Output */}
-                <div className="w-[60%] flex flex-col overflow-hidden">
+                <div className="w-full md:w-[60%] flex flex-col overflow-hidden flex-1">
                     {/* Editor Header */}
                     <div className="flex items-center justify-between px-4 h-11 bg-dark-900 border-b border-white/5 shrink-0">
                         <div className="flex items-center gap-2">

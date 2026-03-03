@@ -106,7 +106,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ email, onComplete }) => {
         <div className="orb w-[400px] h-[400px] bg-violet-600 bottom-0 left-0" style={{ position: 'absolute' }}></div>
 
         <div className="glass-card rounded-3xl w-full max-w-lg relative z-10 animate-fade-in">
-          <div className="p-10">
+          <div className="p-6 md:p-10">
             <StepIndicator />
 
             <div className="mb-8">
@@ -208,7 +208,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ email, onComplete }) => {
       <div className="orb w-[400px] h-[400px] bg-cyan-500 bottom-0 left-0" style={{ position: 'absolute' }}></div>
 
       <div className="glass-card rounded-3xl w-full max-w-2xl relative z-10 animate-fade-in">
-        <div className="p-10">
+        <div className="p-6 md:p-10">
           {loading && (
             <div className="absolute inset-0 glass rounded-3xl z-20 flex flex-col items-center justify-center text-center p-4">
               <div className="relative w-16 h-16 mx-auto mb-6">

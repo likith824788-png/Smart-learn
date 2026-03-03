@@ -14,14 +14,20 @@ const Layout: React.FC<LayoutProps> = ({ children, user }) => {
 
   const navItems = [
     {
-      label: 'Dashboard', path: '/dashboard', icon: (
+      label: 'Dashboard', path: '/dashboard',
+      activeClass: 'from-cyan-500/20 to-blue-500/20 border-cyan-500/20',
+      iconActiveClass: 'text-cyan-400',
+      icon: (
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
           <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
         </svg>
       )
     },
     {
-      label: 'AI Assistant', path: '/ai-assistant', icon: (
+      label: 'AI Assistant', path: '/ai-assistant',
+      activeClass: 'from-violet-500/20 to-fuchsia-500/20 border-violet-500/20',
+      iconActiveClass: 'text-violet-400',
+      icon: (
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z"></path>
           <path d="M12 7l1 1 4-4"></path>
@@ -29,21 +35,30 @@ const Layout: React.FC<LayoutProps> = ({ children, user }) => {
       )
     },
     {
-      label: 'Performance', path: '/performance', icon: (
+      label: 'Performance', path: '/performance',
+      activeClass: 'from-emerald-500/20 to-teal-500/20 border-emerald-500/20',
+      iconActiveClass: 'text-emerald-400',
+      icon: (
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
           <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
         </svg>
       )
     },
     {
-      label: 'History', path: '/history', icon: (
+      label: 'History', path: '/history',
+      activeClass: 'from-amber-500/20 to-orange-500/20 border-amber-500/20',
+      iconActiveClass: 'text-amber-400',
+      icon: (
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
         </svg>
       )
     },
     {
-      label: 'Profile', path: '/profile', icon: (
+      label: 'Profile', path: '/profile',
+      activeClass: 'from-rose-500/20 to-pink-500/20 border-rose-500/20',
+      iconActiveClass: 'text-rose-400',
+      icon: (
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
           <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
         </svg>
@@ -68,11 +83,11 @@ const Layout: React.FC<LayoutProps> = ({ children, user }) => {
               key={item.path}
               to={item.path}
               className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${location.pathname === item.path
-                ? 'bg-gradient-to-r from-cyan-500/20 to-violet-500/20 text-white border border-cyan-500/20'
+                ? `bg-gradient-to-r ${item.activeClass} text-white border`
                 : 'text-slate-400 hover:text-white hover:bg-white/5'
                 }`}
             >
-              <span className={`${location.pathname === item.path ? 'text-cyan-400' : 'text-slate-500 group-hover:text-cyan-400'} transition-colors`}>{item.icon}</span>
+              <span className={`${location.pathname === item.path ? item.iconActiveClass : 'text-slate-500 group-hover:text-cyan-400'} transition-colors`}>{item.icon}</span>
               <span className="font-medium text-sm">{item.label}</span>
             </Link>
           ))}
@@ -122,11 +137,11 @@ const Layout: React.FC<LayoutProps> = ({ children, user }) => {
               to={item.path}
               onClick={() => setMobileMenuOpen(false)}
               className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${location.pathname === item.path
-                ? 'bg-gradient-to-r from-cyan-500/20 to-violet-500/20 text-white border border-cyan-500/20'
+                ? `bg-gradient-to-r ${item.activeClass} text-white border`
                 : 'text-slate-400 hover:text-white hover:bg-white/5'
                 }`}
             >
-              <span className={location.pathname === item.path ? 'text-cyan-400' : 'text-slate-500'}>{item.icon}</span>
+              <span className={location.pathname === item.path ? item.iconActiveClass : 'text-slate-500'}>{item.icon}</span>
               <span className="font-medium text-sm">{item.label}</span>
             </Link>
           ))}

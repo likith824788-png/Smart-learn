@@ -181,7 +181,7 @@ const Profile: React.FC<ProfileProps> = ({ user, setUser }) => {
 
                 <div className="p-8">
                     <div className="flex flex-col md:flex-row gap-8 items-start">
-                        <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-cyan-500 to-violet-500 text-white flex items-center justify-center text-2xl font-bold shrink-0 shadow-lg shadow-cyan-500/20">
+                        <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-500 text-white flex items-center justify-center text-2xl font-bold shrink-0 shadow-lg shadow-rose-500/20">
                             {user.name.charAt(0)}
                         </div>
                         <div className="flex-1">
@@ -243,7 +243,7 @@ const Profile: React.FC<ProfileProps> = ({ user, setUser }) => {
                             ) : (
                                 <div>
                                     <div>
-                                        <h1 className="text-2xl font-bold text-white tracking-tight">{user.name}</h1>
+                                        <h1 className="text-xl md:text-2xl font-bold tracking-tight bg-gradient-to-r from-rose-400 to-pink-400 bg-clip-text text-transparent">{user.name}</h1>
                                         <p className="text-slate-400 text-sm mt-1">{user.email}</p>
                                     </div>
                                     <div className="flex flex-wrap gap-2 mt-4">

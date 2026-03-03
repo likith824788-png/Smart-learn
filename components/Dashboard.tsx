@@ -153,8 +153,15 @@ const Dashboard: React.FC<DashboardProps> = ({ user, setUser }) => {
     <div className="max-w-6xl mx-auto animate-fade-in">
       {/* Header */}
       <div className="mb-10">
-        <h1 className="text-3xl font-bold text-white tracking-tight">Learning Dashboard</h1>
-        <p className="text-slate-400 mt-2">Welcome <span className="text-cyan-400 font-medium">{user.name}</span>. Here is your personalized learning path.</p>
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/25 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-cyan-400" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+            </svg>
+          </div>
+          <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Learning Dashboard</span>
+        </h1>
+        <p className="text-slate-400 mt-2 text-sm md:text-base">Welcome <span className="text-cyan-400 font-medium">{user.name}</span>. Here is your personalized learning path.</p>
       </div>
 
       {/* Stats Grid */}

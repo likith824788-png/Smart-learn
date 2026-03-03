@@ -49,7 +49,7 @@ const Login: React.FC = () => {
       <div className="orb w-[300px] h-[300px] bg-fuchsia-500 top-1/2 left-1/3" style={{ position: 'absolute', opacity: 0.08 }}></div>
 
       <div className="glass-card rounded-3xl w-full max-w-md relative z-10 animate-fade-in">
-        <div className="p-10">
+        <div className="p-6 md:p-10">
           {/* Logo / Header */}
           <div className="text-center mb-10">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-violet-600 mb-5 shadow-lg shadow-cyan-500/20">
@@ -58,7 +58,7 @@ const Login: React.FC = () => {
                 <path d="M13.06 15.473a48.45 48.45 0 017.666-3.282c.134 1.414.22 2.843.255 4.285a.75.75 0 01-.46.71 47.878 47.878 0 00-8.105 4.342.75.75 0 01-.832 0 47.205 47.205 0 00-1.346-.808c-.281.37-.578.713-.887 1.03A.75.75 0 019 21.75a49.29 49.29 0 00-3.795-1.36.75.75 0 01-.46-.71c.033-1.44.122-2.87.268-4.28a49.009 49.009 0 00-2.66-1.14.75.75 0 01-.46-.71c.035-1.442.122-2.873.266-4.291a.75.75 0 01.938-.623c.17.046.34.096.51.148a.75.75 0 01.492.754 47.327 47.327 0 00-.181 3.3 49.386 49.386 0 012.768 1.219 48.478 48.478 0 00-.168-.96.75.75 0 01.492-.753A48.63 48.63 0 0112 13.48a48.645 48.645 0 011.06 1.993z" />
               </svg>
             </div>
-            <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">
+            <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 tracking-tight">
               {isSignUp ? 'Create Account' : 'Welcome Back'}
             </h1>
             <p className="text-slate-400 text-sm">
