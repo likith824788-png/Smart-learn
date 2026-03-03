@@ -12,6 +12,7 @@ import Profile from './components/Profile';
 import History from './components/History';
 import QuizReview from './components/QuizReview';
 import PerformanceChart from './components/PerformanceChart';
+import AIAssistant from './components/AIAssistant';
 import { getUser } from './services/storageService';
 import { UserProfile } from './types';
 import { auth } from './services/firebase';
@@ -133,6 +134,10 @@ const App: React.FC = () => {
 
         <Route path="/performance" element={
           user ? <Layout user={user} setUser={setUser}><PerformanceChart user={user} /></Layout> : <Navigate to="/" />
+        } />
+
+        <Route path="/ai-assistant" element={
+          user ? <Layout user={user} setUser={setUser}><AIAssistant user={user} /></Layout> : <Navigate to="/" />
         } />
 
         <Route path="/history/review/:resultId" element={

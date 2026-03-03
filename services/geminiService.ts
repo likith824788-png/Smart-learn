@@ -176,3 +176,34 @@ No markdown, just the JSON array.`;
     return [];
   }
 };
+
+export const getSubjectAnalysis = async (subjectName: string): Promise<string> => {
+  if (!apiKey || apiKey === 'PLACEHOLDER_API_KEY') {
+    return "⚠️ Please configure your API key to use the AI Assistant.";
+  }
+
+  const cacheKey = `subject_analysis_${subjectName.toLowerCase().replace(/\s+/g, '_')}`;
+  const cached = getFromCache<string>(cacheKey);
+  if (cached) return cached;
+
+  const model = getModel();
+  const prompt = `Analyze the subject: "${subjectName}"
+Provide a comprehensive learning roadmap structured exactly as follows:
+
+1. **Before Learning (Prerequisites)**: What foundational knowledge or tools are needed?
+2. **In the Course (Core Topics)**: What are the primary concepts to master during the course?
+3. **Most Important Topics**: Highlight the 3-5 absolute most critical topics for mastery.
+4. **After Learning (Future Use & Careers)**: How does this subject apply to other courses or future career paths?
+
+Format the response in clean Markdown with clear headers (H3) and bullet points. Use a supportive and professional tone.`;
+
+  try {
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+    saveToCache(cacheKey, text);
+    return text;
+  } catch (error) {
+    return handleGeminiError(error, "Unable to analyze the subject at this time.");
+  }
+};
