@@ -191,11 +191,14 @@ export const getSubjectAnalysis = async (subjectName: string): Promise<string> =
 Provide a comprehensive learning roadmap structured exactly as follows:
 
 1. **Before Learning (Prerequisites)**: What foundational knowledge or tools are needed?
+
 2. **In the Course (Core Topics)**: What are the primary concepts to master during the course?
+
 3. **Most Important Topics**: Highlight the 3-5 absolute most critical topics for mastery.
+
 4. **After Learning (Future Use & Careers)**: How does this subject apply to other courses or future career paths?
 
-Format the response in clean Markdown with clear headers (H3) and bullet points. Use a supportive and professional tone.`;
+Format the response in clean Markdown with clear headers (H3) and bullet points. Use extra vertical space between major sections. Use a supportive and professional tone.`;
 
   try {
     const result = await model.generateContent(prompt);

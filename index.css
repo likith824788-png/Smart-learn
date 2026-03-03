@@ -166,6 +166,8 @@ select.dark-select option {
 .prose-dark h3,
 .prose-dark h4 {
   color: #f1f5f9;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
 }
 
 .prose-dark strong {
@@ -190,6 +192,7 @@ select.dark-select option {
 
 .prose-dark li {
   color: #cbd5e1;
+  margin-bottom: 0.5rem;
 }
 
 /* ===== SCROLLBAR ===== */

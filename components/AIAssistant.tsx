@@ -36,9 +36,9 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ user }) => {
         <div className="max-w-4xl mx-auto animate-fade-in">
             {/* Header */}
             <div className="mb-10 text-center">
-                <h1 className="text-3xl font-bold text-white tracking-tight mb-3">AI Learning Assistant</h1>
+                <h1 className="text-3xl font-bold text-white tracking-tight mb-3">AI Assistant</h1>
                 <p className="text-slate-400 max-w-2xl mx-auto">
-                    Enter any subject or course name to get a complete learning roadmap tailored by AI.
+                    Enter course to get a complete learning roadmap
                 </p>
             </div>
 
