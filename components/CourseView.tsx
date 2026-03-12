@@ -15,35 +15,46 @@ const CourseView: React.FC<CourseViewProps> = ({ user }) => {
     const course = COURSES.find(c => c.id === id);
     const [activeTopic, setActiveTopic] = useState<string | null>(null);
     const [trueCompletedTopics, setTrueCompletedTopics] = useState<Set<string>>(new Set());
-
-    // Compute truly completed topics from quiz history
+    const [quizProgress, setQuizProgress] = useState({ completed: 0, total: 0 });
+    // Compute both topic-level completion (for row checkmarks) AND
+    // quiz-level progress (for the progress gauge) from the same history fetch
     useEffect(() => {
         const computeCompletion = async () => {
             if (!user?.id || !course) return;
             const history = await getQuizHistory(user.id, 500);
+
             const completed = new Set<string>();
+            let totalQuizzes = 0;
+            let completedQuizzes = 0;
 
             course.topics.forEach(topic => {
                 if (!topic.quizzes || topic.quizzes.length === 0) return;
                 const quizIds = topic.quizzes.filter(q => q.id !== 'coding').map(q => q.id);
                 if (quizIds.length === 0) return;
 
-                // Check if each quiz has at least one result
+                totalQuizzes += quizIds.length;
+
                 const completedQuizIds = new Set(
                     history.filter(h => h.topicId === topic.id && h.quizId).map(h => h.quizId!)
                 );
+
+                // Count each attempted quiz individually toward progress
+                completedQuizzes += quizIds.filter(qid => completedQuizIds.has(qid)).length;
+
+                // Topic checkmark only when ALL its quizzes are done
                 if (quizIds.every(qid => completedQuizIds.has(qid))) {
                     completed.add(topic.id);
                 }
             });
 
             setTrueCompletedTopics(completed);
+            setQuizProgress({ completed: completedQuizzes, total: totalQuizzes });
         };
         computeCompletion();
     }, [user?.id, course]);
 
-    const completedInCourse = course ? course.topics.filter(t => trueCompletedTopics.has(t.id)).length : 0;
-    const progress = course && course.topics.length > 0 ? (completedInCourse / course.topics.length) * 100 : 0;
+    // Progress gauge = quiz-based (each completed quiz counts immediately)
+    const progress = quizProgress.total > 0 ? (quizProgress.completed / quizProgress.total) * 100 : 0;
 
     const getTopicContent = (topic: { id: string; bookContent: string }) => {
         return TOPIC_CONTENT[topic.id] || topic.bookContent;

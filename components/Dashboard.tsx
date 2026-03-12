@@ -17,7 +17,8 @@ const Dashboard: React.FC<DashboardProps> = ({ user, setUser }) => {
   const [showFullPlan, setShowFullPlan] = useState(false);
   const [courseProgress, setCourseProgress] = useState<Record<string, number>>({});
 
-  // Compute progress based on completed quizzes
+  // Compute progress — quiz-based, same as CourseView gauge
+  // Each individual quiz completed counts immediately (not waiting for full topic)
   useEffect(() => {
     const computeProgress = async () => {
       if (!user?.id) return;
@@ -31,27 +32,29 @@ const Dashboard: React.FC<DashboardProps> = ({ user, setUser }) => {
         course.topics.forEach(topic => {
           if (!topic.quizzes || topic.quizzes.length === 0) return;
 
-          // Filter out coding challenges if they are not tracked in history the same way, 
-          // or if they are separate. The original code filtered 'coding'.
-          const validQuizzes = topic.quizzes.filter(q => q.id !== 'coding'); // Adjust 'coding' id if necessary based on your data
+          const quizIds = topic.quizzes
+            .filter(q => q.id !== 'coding')
+            .map(q => q.id);
 
-          if (validQuizzes.length === 0) return;
+          if (quizIds.length === 0) return;
 
-          totalQuizzes += validQuizzes.length;
+          totalQuizzes += quizIds.length;
 
-          validQuizzes.forEach(quiz => {
-            const isCompleted = history.some(h =>
-              h.courseId === course.id &&
-              h.topicId === topic.id &&
-              h.quizId === quiz.id
-            );
-            if (isCompleted) {
-              completedQuizzes++;
-            }
-          });
+          // Same filter as CourseView: topicId + quizId only (no courseId check)
+          const completedQuizIds = new Set(
+            history
+              .filter(h => h.topicId === topic.id && h.quizId)
+              .map(h => h.quizId!)
+          );
+
+          // Each quiz that has been attempted counts
+          completedQuizzes += quizIds.filter(qid => completedQuizIds.has(qid)).length;
         });
 
-        progressMap[course.id] = totalQuizzes > 0 ? Math.round((completedQuizzes / totalQuizzes) * 100) : 0;
+        progressMap[course.id] =
+          totalQuizzes > 0
+            ? Math.round((completedQuizzes / totalQuizzes) * 100)
+            : 0;
       });
 
       setCourseProgress(progressMap);
@@ -154,14 +157,14 @@ const Dashboard: React.FC<DashboardProps> = ({ user, setUser }) => {
       {/* Header */}
       <div className="mb-10">
         <h1 className="text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/25 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-cyan-400" viewBox="0 0 20 20" fill="currentColor">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#6b3318]/20 to-[#a0522d]/20 border border-[#6b3318]/25 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#6b3318]" viewBox="0 0 20 20" fill="currentColor">
               <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
             </svg>
           </div>
-          <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Learning Dashboard</span>
+          <span style={{ background: 'linear-gradient(135deg, #5c2e0e, #a0522d, #c87941)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Learning Dashboard</span>
         </h1>
-        <p className="text-slate-400 mt-2 text-sm md:text-base">Welcome <span className="text-cyan-400 font-medium">{user.name}</span>. Here is your personalized learning path.</p>
+        <p className="text-slate-400 mt-2 text-sm md:text-base">Welcome <span className="font-bold" style={{ color: '#a0522d' }}>{user.name}</span>. Here is your personalized learning path.</p>
       </div>
 
       {/* Stats Grid */}
@@ -175,11 +178,11 @@ const Dashboard: React.FC<DashboardProps> = ({ user, setUser }) => {
           <div className="mt-6 space-y-3">
             <div className="flex justify-between text-sm">
               <span className="text-slate-500">Weekly Goal</span>
-              <span className="font-medium text-slate-200">{user.studyHoursPerWeek} Hours</span>
+              <span className="font-medium text-[#111111]">{user.studyHoursPerWeek} Hours</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-slate-500">Learning Style</span>
-              <span className="font-medium text-slate-200 capitalize">{user.studySource}</span>
+              <span className="font-medium text-[#111111] capitalize">{user.studySource}</span>
             </div>
           </div>
         </div>
@@ -188,14 +191,14 @@ const Dashboard: React.FC<DashboardProps> = ({ user, setUser }) => {
         <div className="glass-card rounded-2xl p-6">
           <h2 className="text-sm font-medium text-slate-400 mb-4 uppercase tracking-wider">Daily Target</h2>
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-violet-500/20 border border-cyan-500/20 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-cyan-400" viewBox="0 0 20 20" fill="currentColor">
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg shadow-brown-500/5" style={{ background: 'linear-gradient(135deg, rgba(109,51,24,0.12), rgba(160,82,45,0.08))', border: '1px solid rgba(160,82,45,0.15)' }}>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" viewBox="0 0 20 20" fill="#a0522d">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clipRule="evenodd" />
               </svg>
             </div>
             <div>
-              <p className="text-3xl font-bold text-white">{Math.round((Number(user.studyHoursPerWeek || 0) / 7) * 10) / 10} <span className="text-lg text-slate-400 font-normal">hrs</span></p>
-              <p className="text-xs text-slate-500 mt-0.5">Target for Today</p>
+              <p className="text-3xl font-bold" style={{ color: '#111111' }}>{Math.round((Number(user.studyHoursPerWeek || 0) / 7) * 10) / 10} <span className="text-lg font-normal" style={{ color: '#666666' }}>hrs</span></p>
+              <p className="text-xs mt-0.5" style={{ color: '#666666' }}>Target for Today</p>
             </div>
           </div>
         </div>
@@ -210,12 +213,12 @@ const Dashboard: React.FC<DashboardProps> = ({ user, setUser }) => {
               return (
                 <div key={day} className="flex-1 flex flex-col items-center gap-1.5">
                   <div
-                    className={`w-full rounded-lg transition-all duration-500 ${isCurrentDay ? 'bg-gradient-to-t from-cyan-500 to-violet-500 shadow-lg shadow-cyan-500/20' :
-                      isPastDay ? 'bg-cyan-500/40' : 'bg-dark-500'
+                    className={`w-full rounded-lg transition-all duration-500 ${isCurrentDay ? 'bg-gradient-to-t from-[#6b3318] to-[#a0522d] shadow-lg shadow-brown-500/20' :
+                      isPastDay ? 'bg-[#a0522d]/40' : 'bg-[#ede8e5]'
                       }`}
                     style={{ height: isCurrentDay ? '70%' : isPastDay ? '50%' : '30%' }}
                   ></div>
-                  <span className={`text-[10px] font-bold ${isCurrentDay ? 'text-cyan-400' : isPastDay ? 'text-slate-400' : 'text-slate-600'}`}>
+                  <span className={`text-[10px] font-bold ${isCurrentDay ? 'text-[#a0522d]' : 'text-slate-500'}`}>
                     {day}
                   </span>
                 </div>
@@ -223,7 +226,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, setUser }) => {
             })}
           </div>
           <p className="text-xs text-slate-500">
-            <span className="font-bold text-cyan-400">Day {currentPlanDay}</span> of your 7-day plan.
+            <span className="font-bold text-[#a0522d]">Day {currentPlanDay}</span> of your 7-day plan.
           </p>
         </div>
       </div>
@@ -231,14 +234,14 @@ const Dashboard: React.FC<DashboardProps> = ({ user, setUser }) => {
       {/* Recommendations */}
       {(recommendations.length > 0 || loadingRecs) && (
         <div className="mb-10">
-          <h2 className="text-xl font-bold text-white mb-5 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500/20 to-violet-500/20 border border-cyan-500/20 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-cyan-400" viewBox="0 0 20 20" fill="currentColor">
+          <h2 className="text-xl font-bold mb-5 flex items-center gap-3" style={{ color: '#111111' }}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(160, 82, 45, 0.12)', border: '1px solid rgba(160, 82, 45, 0.2)' }}>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="#a0522d">
                 <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z" />
               </svg>
             </div>
             Recommended for You
-            {loadingRecs && <span className="text-sm font-normal text-slate-500 animate-pulse">(Generating...)</span>}
+            {loadingRecs && <span className="text-sm font-normal text-slate-500 animate-pulse ml-2">(Generating...)</span>}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {loadingRecs && recommendations.length === 0 ? (

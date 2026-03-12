@@ -84,12 +84,12 @@ const History: React.FC<HistoryProps> = ({ user }) => {
             <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
                     <h1 className="text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/25 flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(160, 82, 45, 0.12)', border: '1px solid rgba(160, 82, 45, 0.2)' }}>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="#a0522d">
                                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                             </svg>
                         </div>
-                        <span className="bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">Quiz Performances</span>
+                        <span style={{ background: 'linear-gradient(135deg, #5c2e0e, #a0522d, #c87941)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Quiz Performances</span>
                     </h1>
                     <p className="text-slate-400 mt-2 text-sm">Track your progress and review past attempts</p>
                 </div>
@@ -124,11 +124,11 @@ const History: React.FC<HistoryProps> = ({ user }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="glass-card rounded-2xl p-6 flex items-center justify-between">
                     <div>
-                        <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Quizzes</p>
-                        <h3 className="text-3xl font-bold text-white mt-1">{totalQuizzes}</h3>
+                        <p className="text-xs font-medium uppercase tracking-wider" style={{ color: '#666666' }}>Total Quizzes</p>
+                        <h3 className="text-3xl font-bold mt-1" style={{ color: '#111111' }}>{totalQuizzes}</h3>
                     </div>
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-violet-500/20 border border-cyan-500/20 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(160, 82, 45, 0.1)', border: '1px solid rgba(160, 82, 45, 0.2)' }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="#a0522d">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                         </svg>
                     </div>
@@ -136,11 +136,11 @@ const History: React.FC<HistoryProps> = ({ user }) => {
 
                 <div className="glass-card rounded-2xl p-6 flex items-center justify-between">
                     <div>
-                        <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">Average Score</p>
-                        <h3 className="text-3xl font-bold text-white mt-1">{averageScore}%</h3>
+                        <p className="text-xs font-medium uppercase tracking-wider" style={{ color: '#666666' }}>Average Score</p>
+                        <h3 className="text-3xl font-bold mt-1" style={{ color: '#111111' }}>{averageScore}%</h3>
                     </div>
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 border border-emerald-500/20 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(160, 82, 45, 0.1)', border: '1px solid rgba(160, 82, 45, 0.15)' }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="#7d3e1f">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                         </svg>
                     </div>
@@ -150,8 +150,8 @@ const History: React.FC<HistoryProps> = ({ user }) => {
             {loading ? (
                 <div className="flex justify-center py-12">
                     <div className="relative w-10 h-10">
-                        <div className="absolute inset-0 rounded-full border-2 border-cyan-500/30"></div>
-                        <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-cyan-400 animate-spin"></div>
+                        <div className="absolute inset-0 rounded-full border-2" style={{ borderColor: 'rgba(160, 82, 45, 0.2)' }}></div>
+                        <div className="absolute inset-0 rounded-full border-2 border-transparent animate-spin" style={{ borderTopColor: '#a0522d' }}></div>
                     </div>
                 </div>
             ) : filteredHistory.length === 0 ? (
@@ -171,7 +171,7 @@ const History: React.FC<HistoryProps> = ({ user }) => {
                         >
                             <div className="p-5 flex flex-col md:flex-row items-center justify-between gap-4">
                                 <div className="flex-1">
-                                    <h4 className="font-bold text-white text-sm flex items-center gap-2">
+                                    <h4 className="font-bold text-sm flex items-center gap-2" style={{ color: '#111111' }}>
                                         {(() => {
                                             const course = COURSES.find(c => c.id === quiz.courseId);
                                             const topic = course?.topics.find(t => t.id === quiz.topicId);
@@ -183,12 +183,12 @@ const History: React.FC<HistoryProps> = ({ user }) => {
                                                 <>
                                                     {getCourseName(quiz.courseId)}
                                                     {topic && (
-                                                        <span className="text-slate-500 font-normal text-xs">
+                                                        <span className="font-normal text-xs" style={{ color: '#666666' }}>
                                                             : Topic-{topicIndex}
                                                         </span>
                                                     )}
                                                     {quizName && (
-                                                        <span className="text-cyan-400/70 font-normal text-xs">
+                                                        <span className="font-normal text-xs" style={{ color: '#a0522d' }}>
                                                             — {quizName}
                                                         </span>
                                                     )}
@@ -209,8 +209,8 @@ const History: React.FC<HistoryProps> = ({ user }) => {
                                 </div>
                                 <div className="flex items-center gap-5 w-full md:w-auto justify-between md:justify-end">
                                     <div className="text-right">
-                                        <span className="block font-bold text-lg text-white">{quiz.score}/{quiz.totalQuestions}</span>
-                                        <span className={`text-xs font-bold ${quiz.percentage >= 50 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                                        <span className="block font-bold text-lg" style={{ color: '#111111' }}>{quiz.score}/{quiz.totalQuestions}</span>
+                                        <span className={`text-xs font-bold ${quiz.percentage >= 50 ? 'text-emerald-600' : 'text-rose-600'}`}>
                                             {quiz.percentage.toFixed(0)}%
                                         </span>
                                     </div>
@@ -234,7 +234,7 @@ const History: React.FC<HistoryProps> = ({ user }) => {
 
                             {/* Expanded Details */}
                             {expandedQuizId === quiz.id && (
-                                <div className="border-t border-white/5 bg-dark-800/50 p-6 animate-fade-in">
+                                <div className="border-t p-6 animate-fade-in" style={{ borderColor: 'rgba(160, 82, 45, 0.1)', background: '#fdf8f3' }}>
                                     <div className="mb-6">
                                         <h5 className="text-xs font-bold text-slate-500 mb-3 uppercase tracking-wider">Attempt Summary</h5>
                                         {quiz.questionResults ? (
@@ -261,8 +261,8 @@ const History: React.FC<HistoryProps> = ({ user }) => {
 
                                     {quiz.feedback && (
                                         <div className="glass-light rounded-xl p-5">
-                                            <h5 className="font-bold text-white text-sm mb-3 flex items-center gap-2">
-                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-cyan-400" viewBox="0 0 20 20" fill="currentColor">
+                                            <h5 className="font-bold text-sm mb-3 flex items-center gap-2" style={{ color: '#111111' }}>
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="#a0522d">
                                                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                                                 </svg>
                                                 Suggestions

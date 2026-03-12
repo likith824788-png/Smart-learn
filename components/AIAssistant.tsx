@@ -36,27 +36,29 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ user }) => {
         <div className="max-w-4xl mx-auto animate-fade-in">
             {/* Header */}
             <div className="mb-10 text-center">
-                <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-3 bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">AI Assistant</h1>
-                <p className="text-slate-400 max-w-2xl mx-auto">
+                <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-3" style={{ background: 'linear-gradient(135deg, #5c2e0e, #a0522d, #c87941)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>AI Assistant</h1>
+                <p className="text-slate-500 max-w-2xl mx-auto">
                     Enter course to get a complete learning roadmap
                 </p>
             </div>
 
             {/* Search Bar */}
             <form onSubmit={handleSearch} className="mb-12 relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-violet-500/20 blur-xl group-focus-within:opacity-100 opacity-50 transition-opacity rounded-2xl"></div>
-                <div className="relative flex flex-col sm:flex-row gap-3 p-2 glass-card rounded-2xl border border-white/10">
+                <div className="absolute inset-0 blur-xl group-focus-within:opacity-100 opacity-50 transition-opacity rounded-2xl" style={{ background: 'linear-gradient(90deg, rgba(109, 51, 24, 0.15), rgba(160, 82, 45, 0.15))' }}></div>
+                <div className="relative flex flex-col sm:flex-row gap-3 p-2 glass-card rounded-2xl">
                     <input
                         type="text"
                         value={subject}
                         onChange={(e) => setSubject(e.target.value)}
                         placeholder="e.g., Quantum Computing, Machine Learning, Modern History..."
-                        className="flex-1 bg-transparent border-none focus:ring-0 text-white px-4 py-3 text-base md:text-lg placeholder:text-slate-500"
+                        className="flex-1 bg-transparent border-none focus:ring-0 px-4 py-3 text-base md:text-lg placeholder:text-slate-500"
+                        style={{ color: '#111111' }}
                     />
                     <button
                         type="submit"
                         disabled={isLoading || !subject.trim()}
-                        className="bg-gradient-to-r from-cyan-500 to-violet-500 hover:from-cyan-400 hover:to-violet-400 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 sm:px-8 py-3 rounded-xl font-bold transition-all shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2"
+                        className="btn-gradient disabled:opacity-50 disabled:cursor-not-allowed px-6 sm:px-8 py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2"
+                        style={{ boxShadow: '0 10px 15px -3px rgba(109, 51, 24, 0.2)' }}
                     >
                         {isLoading ? (
                             <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
@@ -79,7 +81,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ user }) => {
 
             {analysis && (
                 <div className="glass-card rounded-2xl overflow-hidden relative animate-slide-up">
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 via-violet-500 to-fuchsia-500"></div>
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#6b3318] via-[#a0522d] to-[#c8a070]"></div>
                     <div className="p-5 md:p-8 lg:p-10">
                         <div className="prose-dark prose prose-lg max-w-none">
                             <ReactMarkdown>{analysis}</ReactMarkdown>
@@ -102,7 +104,8 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ user }) => {
                         <button
                             key={spec}
                             onClick={() => setSubject(spec)}
-                            className="glass-card p-4 rounded-xl text-sm text-slate-400 hover:text-cyan-400 hover:border-cyan-500/30 transition-all text-center"
+                            className="glass-card p-4 rounded-xl text-sm transition-all text-center hover:text-[#a0522d]"
+                            style={{ color: '#666666' }}
                         >
                             Try "{spec}"
                         </button>

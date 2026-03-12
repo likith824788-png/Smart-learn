@@ -123,23 +123,24 @@ const Quiz: React.FC<QuizProps> = ({ user, setUser }) => {
 
   // Confirmation Modal
   const ConfirmationModal = () => (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="glass-card rounded-2xl p-8 max-w-md w-full animate-fade-in">
-        <h3 className="text-xl font-bold text-white mb-2">Submit Quiz?</h3>
-        <p className="text-slate-400 text-sm mb-6">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="rounded-2xl p-8 max-w-md w-full animate-fade-in shadow-2xl" style={{ background: '#ffffff', border: '1.5px solid rgba(160, 82, 45, 0.2)' }}>
+        <h3 className="text-xl font-bold mb-2" style={{ color: '#111111' }}>Submit Quiz?</h3>
+        <p className="text-sm mb-6" style={{ color: '#666666' }}>
           You've answered {Object.keys(answers).length} of {questions.length} questions.
           Are you sure you want to submit?
         </p>
         <div className="flex gap-3">
           <button
             onClick={() => setShowConfirmation(false)}
-            className="flex-1 py-3 bg-white/5 border border-white/10 rounded-xl font-medium text-slate-300 hover:bg-white/10 transition-all text-sm"
+            className="flex-1 py-3 border rounded-xl font-medium transition-all text-sm"
+            style={{ borderColor: 'rgba(160, 82, 45, 0.2)', color: '#444444' }}
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
-            className="flex-1 py-3 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-emerald-500/20 transition-all text-sm"
+            className="flex-1 py-3 btn-gradient text-white rounded-xl font-semibold shadow-lg shadow-brown-500/20 transition-all text-sm"
           >
             Yes, Submit
           </button>
@@ -150,22 +151,22 @@ const Quiz: React.FC<QuizProps> = ({ user, setUser }) => {
 
   if (result) {
     return (
-      <div className="min-h-screen bg-dark-950 flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4" style={{ background: '#ffffff' }}>
         <div className="max-w-2xl w-full animate-fade-in">
           <div className="glass-card rounded-3xl p-10 text-center relative overflow-hidden">
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 via-violet-500 to-fuchsia-500"></div>
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#6b3318] via-[#a0522d] to-[#c8a070]"></div>
 
             <div className="text-6xl mb-5">{result.percentage >= 50 ? '🎉' : '📚'}</div>
-            <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Quiz Completed!</h2>
-            <p className="text-slate-400 text-sm mb-8">Here is how you performed on {quizTitle}</p>
+            <h2 className="text-3xl font-bold mb-2 tracking-tight" style={{ color: '#111111' }}>Quiz Completed!</h2>
+            <p className="text-sm mb-8" style={{ color: '#666666' }}>Here is how you performed on {quizTitle}</p>
 
             <div className="grid grid-cols-2 gap-4 mb-8">
               <div className="glass-light rounded-2xl p-5">
-                <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Score</p>
+                <p className="text-xs uppercase tracking-wider mb-1" style={{ color: '#666666' }}>Score</p>
                 <p className="text-2xl font-bold gradient-text">{result.score} / {result.totalQuestions}</p>
               </div>
               <div className="glass-light rounded-2xl p-5">
-                <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Badge</p>
+                <p className="text-xs uppercase tracking-wider mb-1" style={{ color: '#666666' }}>Badge</p>
                 <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border bg-gradient-to-r ${getBadgeStyle(result.badge)}`}>
                   {result.badge === 'Novice' ? (
                     <span className="text-lg">🌱</span>
@@ -180,16 +181,16 @@ const Quiz: React.FC<QuizProps> = ({ user, setUser }) => {
             </div>
 
             <div className="glass-light rounded-2xl p-6 text-left mb-8">
-              <h3 className="font-bold text-white mb-3 flex items-center gap-2 text-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-cyan-400" viewBox="0 0 20 20" fill="currentColor">
+              <h3 className="font-bold mb-3 flex items-center gap-2 text-sm" style={{ color: '#111111' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="#a0522d">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                 </svg>
                 Smart Feedback
               </h3>
               {loadingFeedback ? (
-                <p className="text-sm text-slate-400 animate-pulse">Generating insights...</p>
+                <p className="text-sm animate-pulse" style={{ color: '#888888' }}>Generating insights...</p>
               ) : (
-                <div className="text-sm text-slate-300 leading-relaxed prose-dark prose max-w-none">
+                <div className="text-sm leading-relaxed prose-dark prose max-w-none" style={{ color: '#333333' }}>
                   <ReactMarkdown>{result.feedback}</ReactMarkdown>
                 </div>
               )}
@@ -220,10 +221,11 @@ const Quiz: React.FC<QuizProps> = ({ user, setUser }) => {
   };
 
   return (
-    <div className="min-h-screen bg-dark-950 p-6 md:p-10 relative">
+    <div className="min-h-screen p-6 md:p-10 relative" style={{ background: '#ffffff' }}>
       <button
         onClick={handleExit}
-        className="mb-8 flex items-center text-slate-500 hover:text-white font-medium transition-colors text-sm"
+        className="mb-8 flex items-center font-medium transition-colors text-sm hover:text-[#a0522d]"
+        style={{ color: '#666666' }}
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
           <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -236,16 +238,16 @@ const Quiz: React.FC<QuizProps> = ({ user, setUser }) => {
 
         <div className="mb-6">
           <div className="flex justify-between items-end mb-3">
-            <h2 className="text-lg font-bold text-white">Question {currentQuestionIndex + 1}</h2>
-            <span className="text-sm text-slate-500 font-medium">{currentQuestionIndex + 1} of {questions.length}</span>
+            <h2 className="text-lg font-bold" style={{ color: '#111111' }}>Question {currentQuestionIndex + 1}</h2>
+            <span className="text-sm font-medium" style={{ color: '#666666' }}>{currentQuestionIndex + 1} of {questions.length}</span>
           </div>
-          <div className="w-full bg-dark-600 rounded-full h-1.5">
-            <div className="bg-gradient-to-r from-cyan-500 to-violet-500 h-1.5 rounded-full transition-all duration-500" style={{ width: `${progress}%` }}></div>
+          <div className="w-full rounded-full h-1.5" style={{ background: 'rgba(160, 82, 45, 0.1)' }}>
+            <div className="h-1.5 rounded-full transition-all duration-500" style={{ width: `${progress}%`, background: 'linear-gradient(90deg, #6b3318, #a0522d)' }}></div>
           </div>
         </div>
 
         <div className="glass-card rounded-2xl p-8 min-h-[400px] flex flex-col">
-          <p className="text-lg font-medium text-white mb-8 whitespace-pre-wrap">{question.text}</p>
+          <p className="text-lg font-bold mb-8 whitespace-pre-wrap" style={{ color: '#111111' }}>{question.text}</p>
 
           <div className="space-y-3 flex-1">
             {question.options.map((option, idx) => (
@@ -253,17 +255,18 @@ const Quiz: React.FC<QuizProps> = ({ user, setUser }) => {
                 key={idx}
                 onClick={() => handleOptionSelect(question.id, idx)}
                 className={`w-full text-left p-4 rounded-xl border transition-all duration-200 ${answers[question.id] === idx
-                  ? 'bg-cyan-500/10 border-cyan-500/40 text-white shadow-lg shadow-cyan-500/5'
-                  : 'bg-dark-700/50 border-white/5 text-slate-300 hover:border-white/15 hover:bg-dark-600/50'
+                  ? 'bg-brown-500/5 text-[#111111] shadow-lg shadow-brown-500/5'
+                  : 'bg-transparent text-[#444444] hover:bg-brown-500/5'
                   }`}
+                style={{ borderColor: answers[question.id] === idx ? 'rgba(160, 82, 45, 0.4)' : 'rgba(160, 82, 45, 0.12)' }}
               >
                 <span className={`inline-block w-6 h-6 rounded-full border text-xs text-center leading-6 mr-3 transition-all ${answers[question.id] === idx
-                  ? 'border-cyan-400 bg-cyan-500 text-white'
-                  : 'border-slate-600 text-slate-500'
+                  ? 'border-brown-400 bg-[#a0522d] text-white'
+                  : 'border-slate-300 text-slate-500'
                   }`}>
                   {String.fromCharCode(65 + idx)}
                 </span>
-                <span className="text-sm">{option}</span>
+                <span className="text-sm font-medium">{option}</span>
               </button>
             ))}
           </div>
@@ -272,7 +275,8 @@ const Quiz: React.FC<QuizProps> = ({ user, setUser }) => {
             <button
               disabled={currentQuestionIndex === 0}
               onClick={() => setCurrentQuestionIndex(prev => prev - 1)}
-              className="px-6 py-2.5 text-slate-400 font-medium disabled:opacity-30 hover:text-white transition-colors text-sm"
+              className="px-6 py-2.5 font-medium disabled:opacity-30 hover:text-[#a0522d] transition-colors text-sm"
+              style={{ color: '#888888' }}
             >
               Previous
             </button>
@@ -305,10 +309,10 @@ const Quiz: React.FC<QuizProps> = ({ user, setUser }) => {
                 key={q.id}
                 onClick={() => setCurrentQuestionIndex(idx)}
                 className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${currentQuestionIndex === idx
-                  ? 'bg-gradient-to-br from-cyan-500 to-violet-500 text-white shadow-lg shadow-cyan-500/20'
+                  ? 'btn-gradient text-white shadow-lg shadow-brown-500/20'
                   : answers[q.id] !== undefined
-                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/20'
-                    : 'bg-dark-600 text-slate-500 hover:bg-dark-500'
+                    ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20'
+                    : 'bg-[#f5f0ee] text-slate-500 hover:bg-[#ede8e5]'
                   }`}
               >
                 {idx + 1}
